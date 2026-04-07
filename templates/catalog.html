@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Catálogo | LensMatch{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="section-header">
+        <h2>Catálogo de Lentes</h2>
+        <p>Explora toda nuestra colección de armazones</p>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:32px;flex-wrap:wrap;">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre o marca..."
+               style="padding:10px 18px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);width:320px;font-size:0.9rem;outline:none;font-family:inherit;"
+               oninput="searchGlasses(this.value)">
+    </div>
+
+    <div class="results-grid" id="catalogGrid">
+        {% for g in glasses %}
+        <a href="/detalle/{{ g.id }}" class="glass-card" data-name="{{ g.name|lower }}" data-brand="{{ g.brand|lower }}">
+            <img src="{{ g.image }}" alt="{{ g.name }}" class="glass-card-img" loading="lazy">
+            <div class="glass-card-body">
+                <h4>{{ g.name }}</h4>
+                <div class="glass-card-brand">{{ g.brand }} · {{ g.style }}</div>
+                <div class="glass-card-tags">
+                    {% for tag in g.tags %}
+                    <span class="badge badge-blue">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                <div class="glass-card-footer">
+                    <a href="/prueba-virtual/{{ g.id }}" class="btn btn-sm btn-outline" onclick="event.stopPropagation();">👓 Probar</a>
+                    <span class="compatibility-text">{{ g.compatibility }}%</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function searchGlasses(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('#catalogGrid .glass-card').forEach(card => {
+        const name = card.dataset.name || '';
+        const brand = card.dataset.brand || '';
+        card.style.display = (name.includes(q) || brand.includes(q)) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

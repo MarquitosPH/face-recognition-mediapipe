@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ glass.name }} | LensMatch{% endblock %}
+{% block content %}
+<div class="detail-layout">
+    <div class="detail-gallery">
+        <img src="{{ glass.image }}" alt="{{ glass.name }}" class="detail-main-img" id="mainImg">
+        <div class="detail-thumbs">
+            {% for img in glass.images %}
+            <img src="{{ img }}" alt="Vista {{ loop.index }}" class="detail-thumb {% if loop.first %}active{% endif %}"
+                 onclick="document.getElementById('mainImg').src=this.src;document.querySelectorAll('.detail-thumb').forEach(t=>t.classList.remove('active'));this.classList.add('active');">
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="detail-info">
+        <h1>{{ glass.name }}</h1>
+        <div class="detail-brand">{{ glass.brand }}</div>
+        <p class="detail-desc">{{ glass.description }}</p>
+
+        <div class="detail-specs">
+            <div class="spec-item">
+                <div class="spec-label">Estilo</div>
+                <div class="spec-value">{{ glass.style }}</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Material</div>
+                <div class="spec-value">{{ glass.material }}</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Categoría</div>
+                <div class="spec-value">{{ glass.category }}</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Género</div>
+                <div class="spec-value">{{ glass.gender }}</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <div class="filter-label" style="margin-bottom:6px;">Compatible con rostros</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                {% for face in glass.compatible_faces %}
+                <span class="badge badge-green">{{ face }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="margin-bottom:24px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div class="compatibility-bar" style="width:120px;height:8px;">
+                    <div class="compatibility-fill" style="width:{{ glass.compatibility }}%"></div>
+                </div>
+                <span class="compatibility-text" style="font-size:0.9rem;">{{ glass.compatibility }}% compatibilidad</span>
+            </div>
+        </div>
+
+        <div class="detail-actions">
+            <a href="/prueba-virtual/{{ glass.id }}" class="btn btn-primary btn-lg">👓 Probar virtualmente</a>
+            <a href="/resultados" class="btn btn-outline">← Ver más opciones</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

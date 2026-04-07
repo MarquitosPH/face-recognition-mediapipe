@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}LensMatch — Encuentra los lentes perfectos para tu rostro{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-container">
+        <h1>Encuentra los lentes perfectos para tu rostro</h1>
+        <p>Sube una foto o usa tu cámara y nuestro sistema detectará la forma de tu rostro para recomendarte los armazones ideales.</p>
+        <div class="hero-actions">
+            <a href="/analisis" class="btn btn-primary btn-lg">Comenzar Análisis</a>
+            <a href="/catalogo" class="btn btn-outline btn-lg">Ver Catálogo</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features-section grid-3">
+    <div class="feature-card">
+        <div class="feature-icon">📷</div>
+        <h3>Detección Facial</h3>
+        <p>Análisis automático de la forma de tu rostro con reconocimiento de rasgos clave usando IA.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Recomendaciones Personalizadas</h3>
+        <p>Sugerencias basadas en compatibilidad entre tu tipo de rostro y el estilo de armazón.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">👓</div>
+        <h3>Prueba Virtual</h3>
+        <p>Visualiza cómo se ven los lentes en tu cara en tiempo real con nuestra cámara AR.</p>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="steps-section">
+    <div class="steps-container">
+        <h2>¿Cómo funciona?</h2>
+        <div class="steps-grid">
+            <div>
+                <div class="step-num">1</div>
+                <div class="step-title">Toma una foto</div>
+                <div class="step-desc">Usa tu cámara o sube una imagen de tu rostro</div>
+            </div>
+            <div>
+                <div class="step-num">2</div>
+                <div class="step-title">Analizamos tu rostro</div>
+                <div class="step-desc">Detectamos la forma y proporciones de tu cara con IA</div>
+            </div>
+            <div>
+                <div class="step-num">3</div>
+                <div class="step-title">Recomendaciones</div>
+                <div class="step-desc">Te mostramos los lentes más compatibles contigo</div>
+            </div>
+            <div>
+                <div class="step-num">4</div>
+                <div class="step-title">Prueba virtual</div>
+                <div class="step-desc">Visualiza cómo lucen en tu cara en tiempo real</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="text-align:center;padding:60px 24px;background:var(--blue-light);">
+    <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:8px;">¿No sabes cuál es la forma de tu rostro?</h2>
+    <p style="color:var(--gray-500);margin-bottom:20px;">Nuestro sistema lo detecta por ti en segundos.</p>
+    <a href="/analisis" class="btn btn-primary btn-lg">Detectar mi tipo de rostro →</a>
+</section>
+{% endblock %}

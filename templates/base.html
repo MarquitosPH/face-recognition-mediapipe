@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LensMatch{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">👓</span>
+                <span class="logo-text">LensMatch</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Inicio</a>
+                <a href="/analisis" class="nav-link">Análisis</a>
+                <a href="/catalogo" class="nav-link">Catálogo</a>
+                <a href="/guia-rostros" class="nav-link">Guía de Rostros</a>
+            </div>
+            <a href="/analisis" class="btn btn-primary btn-sm">Comenzar Análisis</a>
+        </div>
+    </nav>
+
+    <!-- Contenido -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2025 LensMatch — Sistema de Recomendación de Lentes</p>
+            <p>Tecnologías: OpenCV · MediaPipe · FastAPI</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

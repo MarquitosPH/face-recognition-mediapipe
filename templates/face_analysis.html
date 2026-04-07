@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Análisis Facial Completo | LensMatch{% endblock %}
+{% block content %}
+<div class="container" style="max-width:800px;">
+    <div class="section-header">
+        <h2>Análisis Facial Completo</h2>
+        <p>Resultado detallado de tu análisis con métricas avanzadas</p>
+    </div>
+
+    <div id="noAnalysis" class="card" style="padding:40px;text-align:center;">
+        <span style="font-size:3rem;display:block;margin-bottom:12px;">📷</span>
+        <h3 style="margin-bottom:8px;">No hay análisis disponible</h3>
+        <p style="color:var(--gray-500);margin-bottom:20px;">Primero necesitas realizar un escaneo facial.</p>
+        <a href="/analisis" class="btn btn-primary">Iniciar Análisis →</a>
+    </div>
+
+    <div id="analysisData" style="display:none;">
+        <div class="card" style="padding:32px;margin-bottom:24px;">
+            <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;">
+                <div style="width:80px;height:80px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">👤</div>
+                <div>
+                    <div style="font-size:0.75rem;text-transform:uppercase;color:var(--gray-400);font-weight:600;">Tu tipo de rostro</div>
+                    <div style="font-size:1.8rem;font-weight:800;" id="aType">—</div>
+                    <div style="color:var(--gray-500);font-size:0.88rem;" id="aConf">Confianza: —</div>
+                </div>
+            </div>
+            <p style="color:var(--gray-600);line-height:1.7;" id="aDesc"></p>
+        </div>
+
+        <div class="card" style="padding:32px;margin-bottom:24px;">
+            <h3 style="margin-bottom:16px;">Características detectadas</h3>
+            <div id="aChars" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+        </div>
+
+        <div style="display:flex;gap:16px;justify-content:center;">
+            <a href="/resultados" class="btn btn-primary btn-lg">Ver Lentes Recomendados →</a>
+            <a href="/analisis" class="btn btn-outline btn-lg">Repetir Análisis</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const shape = localStorage.getItem('lm_face_shape');
+    const conf = localStorage.getItem('lm_confidence');
+    if (shape) {
+        document.getElementById('noAnalysis').style.display = 'none';
+        document.getElementById('analysisData').style.display = 'block';
+        document.getElementById('aType').textContent = shape;
+        document.getElementById('aConf').textContent = `Confianza: ${conf || '?'}%`;
+
+        const descs = {
+            'Ovalado': 'Rostro equilibrado con proporciones armónicas. Los pómulos son tu zona más ancha y el mentón se suaviza gradualmente.',
+            'Redondo': 'Rostro con líneas suaves, casi tan ancho como largo. Tus pómulos son amplios y el mentón es redondeado.',
+            'Cuadrado': 'Rostro con mandíbula angular marcada. Frente, pómulos y mandíbula presentan un ancho similar.',
+            'Rectángulo': 'Rostro notablemente más largo que ancho con ángulos definidos y mandíbula pronunciada.',
+            'Triángulo': 'Tu mandíbula es la zona más ancha del rostro, con frente más estrecha.',
+            'Corazón': 'Frente amplia con mentón puntiagudo. La mandíbula es más estrecha que la zona superior.',
+            'Diamante': 'Pómulos prominentes dominan el ancho facial. Frente y mandíbula son más estrechas.',
+        };
+        document.getElementById('aDesc').textContent = descs[shape] || '';
+
+        const chars = {
+            'Ovalado': ['Equilibrado', 'Pómulos prominentes', 'Mentón suave', 'Frente proporcionada'],
+            'Redondo': ['Líneas suaves', 'Pómulos amplios', 'Mentón redondeado', 'Ancho ≈ alto'],
+            'Cuadrado': ['Mandíbula angular', 'Frente amplia', 'Mentón cuadrado', 'Líneas definidas'],
+            'Rectángulo': ['Cara alargada', 'Mandíbula definida', 'Frente amplia', 'Ángulos marcados'],
+            'Triángulo': ['Mandíbula ancha', 'Frente estrecha', 'Base amplia', 'Mentón ancho'],
+            'Corazón': ['Frente amplia', 'Mentón puntiagudo', 'Pómulos altos', 'Forma de V invertida'],
+            'Diamante': ['Pómulos dominantes', 'Frente estrecha', 'Mentón definido', 'Forma angular'],
+        };
+        const charsEl = document.getElementById('aChars');
+        (chars[shape] || []).forEach(c => {
+            charsEl.innerHTML += `<span class="badge badge-blue" style="font-size:0.85rem;padding:8px 14px;">${c}</span>`;
+        });
+    }
+});
+</script>
+{% endblock %}

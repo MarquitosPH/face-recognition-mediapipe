@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prueba Virtual — {{ glass.name }} | LensMatch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-aframe.prod.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; overflow:hidden; width:100vw; height:100vh; }
+        .a-enter-vr, .a-orientation-modal { display:none !important; }
+
+        /* UI flotante sobre la escena AR */
+        .overlay-top {
+            position:fixed; top:0; left:0; right:0; z-index:100;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 20px;
+            background:linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
+        }
+        .overlay-top a, .overlay-top button {
+            color:white; text-decoration:none; font-size:0.85rem; font-weight:600;
+            padding:8px 16px; border-radius:8px; border:none; cursor:pointer;
+            background:rgba(255,255,255,0.15); backdrop-filter:blur(8px);
+            transition:background 0.2s;
+        }
+        .overlay-top a:hover, .overlay-top button:hover { background:rgba(255,255,255,0.3); }
+        .overlay-logo { color:white; font-weight:700; font-size:1.1rem; }
+
+        /* Panel lateral de lentes */
+        .sidebar-panel {
+            position:fixed; right:0; top:0; bottom:0; width:280px; z-index:90;
+            background:rgba(255,255,255,0.95); backdrop-filter:blur(12px);
+            overflow-y:auto; border-left:1px solid rgba(0,0,0,0.1);
+            transform:translateX(0); transition:transform 0.3s;
+        }
+        .sidebar-panel.hidden { transform:translateX(100%); }
+        .sidebar-header { padding:16px 20px; border-bottom:1px solid #e2e8f0; margin-top:50px; }
+        .sidebar-header h3 { font-size:0.95rem; font-weight:700; color:#0F172A; }
+        .sidebar-header p { font-size:0.78rem; color:#94A3B8; }
+        .sidebar-current { padding:12px 20px; background:#EFF6FF; border-bottom:1px solid #e2e8f0; }
+        .sidebar-current .name { font-weight:600; font-size:0.85rem; }
+        .sidebar-current .meta { font-size:0.75rem; color:#94A3B8; }
+        .glass-list { padding:8px 12px; }
+        .glass-item {
+            display:flex; gap:10px; align-items:center; padding:10px;
+            border-radius:8px; cursor:pointer; transition:background 0.2s;
+            border:2px solid transparent;
+        }
+        .glass-item:hover { background:#f1f5f9; }
+        .glass-item.active { background:#EFF6FF; border-color:#3B82F6; }
+        .glass-item img { width:48px; height:36px; border-radius:6px; object-fit:cover; }
+        .glass-item .info { flex:1; min-width:0; }
+        .glass-item .info .name { font-size:0.8rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .glass-item .info .meta { font-size:0.7rem; color:#94A3B8; }
+
+        /* Panel de sliders */
+        .sliders-panel {
+            position:fixed; bottom:0; left:0; right:280px; z-index:100;
+            background:rgba(0,0,0,0.6); backdrop-filter:blur(8px);
+            padding:12px 20px; display:flex; gap:16px; flex-wrap:wrap;
+        }
+        .slider-group { flex:1; min-width:120px; }
+        .slider-group label { font-size:0.7rem; color:rgba(255,255,255,0.8); font-weight:600; display:block; margin-bottom:2px; }
+        .slider-group input[type=range] { width:100%; }
+
+        /* Toggle sidebar button */
+        .toggle-sidebar {
+            position:fixed; right:290px; top:60px; z-index:100;
+            background:rgba(0,0,0,0.5); color:white; border:none;
+            padding:6px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem;
+            backdrop-filter:blur(8px);
+        }
+
+        @media (max-width:768px) {
+            .sidebar-panel { width:240px; }
+            .sliders-panel { right:0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ═══ ESCENA MINDAR — PANTALLA COMPLETA ═══ -->
+    <a-scene
+        id="arScene"
+        mindar-face="autoStart: true;"
+        color-space="sRGB"
+        renderer="colorManagement: true; physicallyCorrectLights: true;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+    >
+        <a-assets timeout="30000">
+            <a-asset-item id="headModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/sparkar/headOccluder.glb"></a-asset-item>
+            <a-asset-item id="glassesModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/glasses/scene.gltf"></a-asset-item>
+        </a-assets>
+
+        <a-camera active="false" position="0 0 0"></a-camera>
+
+        <a-light type="ambient" color="#ffffff" intensity="0.8"></a-light>
+        <a-light type="directional" color="#ffffff" intensity="0.6" position="0 1 2"></a-light>
+
+        <!-- HEAD OCCLUDER — cráneo invisible -->
+        <a-entity mindar-face-target="anchorIndex: 168">
+            <a-gltf-model
+                id="occluder"
+                mindar-face-occluder
+                position="0 -0.3 0.15"
+                rotation="0 0 0"
+                scale="0.065 0.065 0.065"
+                src="#headModel"
+            ></a-gltf-model>
+        </a-entity>
+
+        <!-- LENTES 3D -->
+        <a-entity mindar-face-target="anchorIndex: 168">
+            <a-gltf-model
+                id="glassesEntity"
+                position="0 -0.02 0.05"
+                rotation="0 0 0"
+                scale="0.012 0.012 0.012"
+                src="#glassesModel"
+            ></a-gltf-model>
+        </a-entity>
+    </a-scene>
+
+    <!-- ═══ UI FLOTANTE ═══ -->
+
+    <!-- Barra superior -->
+    <div class="overlay-top">
+        <span class="overlay-logo">👓 LensMatch</span>
+        <div style="display:flex;gap:8px;">
+            <button onclick="captureSnapshot()">📸 Capturar</button>
+            <a href="/detalle/{{ glass.id }}">← Volver</a>
+            <a href="/">🏠 Inicio</a>
+            <button onclick="toggleSidebar()">☰ Modelos</button>
+        </div>
+    </div>
+
+    <!-- Nombre del lente actual -->
+    <div style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:100;
+                background:rgba(0,0,0,0.6);color:white;padding:8px 24px;border-radius:20px;
+                font-size:0.85rem;font-weight:600;backdrop-filter:blur(8px);">
+        👓 <span id="currentGlassName">{{ glass.name }}</span>
+    </div>
+
+    <!-- Sidebar de modelos -->
+    <div class="sidebar-panel" id="sidebarPanel">
+        <div class="sidebar-header">
+            <h3>Probando ahora</h3>
+            <p>Selecciona otro modelo</p>
+        </div>
+        <div class="sidebar-current">
+            <div class="name" id="currentName">{{ glass.name }}</div>
+            <div class="meta">{{ glass.brand }} · {{ glass.style }} · {{ glass.material }}</div>
+        </div>
+        <div class="glass-list">
+            {% for g in all_glasses %}
+            <div class="glass-item {% if g.id == glass.id %}active{% endif %}"
+                 data-glass-id="{{ g.id }}" data-glass-name="{{ g.name }}"
+                 data-glass-image="{{ g.image }}" data-glass-model="{{ g.model_3d }}"
+                 onclick="selectGlass(this)">
+                <img src="{{ g.image }}" alt="{{ g.name }}">
+                <div class="info">
+                    <div class="name">{{ g.name }}</div>
+                    <div class="meta">{{ g.brand }} · {{ g.style }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sliders de ajuste -->
+    <div class="sliders-panel">
+    <div class="slider-group">
+        <label>Escala: <span id="valScale">1</span></label>
+        <input type="range" id="sliderScale" min="0.001" max="0.1" step="0.001" value="0.01" oninput="adjustGlasses()">
+    </div>
+    <div class="slider-group">
+        <label>Y (arriba/abajo): <span id="valY">0</span></label>
+        <input type="range" id="sliderY" min="-0.5" max="0.5" step="0.01" value="0" oninput="adjustGlasses()">
+    </div>
+    <div class="slider-group">
+        <label>Z (profundidad): <span id="valZ">0</span></label>
+        <input type="range" id="sliderZ" min="-0.5" max="0.5" step="0.01" value="0" oninput="adjustGlasses()">
+    </div>
+    <div class="slider-group">
+        <label>X (izq/der): <span id="valX">0</span></label>
+        <input type="range" id="sliderX" min="-0.3" max="0.3" step="0.01" value="0" oninput="adjustGlasses()">
+    </div>
+</div>
+    <script>
+    // ═══════════════════════════════════════════════════════
+    // LensMatch — MindAR Full-Screen + Head Occluder
+    // ═══════════════════════════════════════════════════════
+
+    let currentModelName = '{{ glass.model_3d }}';
+
+    const GLASS_CONFIGS = {
+    LentesPrueba1: {
+    scale: "0.064 0.064 0.064",
+    position: "0 -0.34 -0.33",
+    rotation: "0 0 0",
+    },
+        // NuevoModelo: { scale:"0.01 0.01 0.01", position:"0 0 0.05", rotation:"0 0 0" },
+    };
+    const DEFAULT_CONFIG = { scale:"0.01 0.01 0.01", position:"0 0 0.05", rotation:"0 0 0" };
+    function getConfig(n) { return GLASS_CONFIGS[n] || DEFAULT_CONFIG; }
+
+    function adjustGlasses() {
+        const e = document.getElementById('glassesEntity');
+        if (!e) return;
+        const s=parseFloat(document.getElementById('sliderScale').value);
+        const y=parseFloat(document.getElementById('sliderY').value);
+        const z=parseFloat(document.getElementById('sliderZ').value);
+        const x=parseFloat(document.getElementById('sliderX').value);
+        e.setAttribute('scale',`${s} ${s} ${s}`);
+        e.setAttribute('position',`${x} ${y} ${z}`);
+        document.getElementById('valScale').textContent=s.toFixed(3);
+        document.getElementById('valY').textContent=y.toFixed(2);
+        document.getElementById('valZ').textContent=z.toFixed(2);
+        document.getElementById('valX').textContent=x.toFixed(2);
+    }
+
+    function selectGlass(el) {
+        document.querySelectorAll('.glass-item').forEach(o=>o.classList.remove('active'));
+        el.classList.add('active');
+        const name=el.dataset.glassName, model=el.dataset.glassModel, id=el.dataset.glassId;
+        document.getElementById('currentGlassName').textContent=name;
+        document.getElementById('currentName').textContent=name;
+
+        if (model) {
+            currentModelName=model;
+            const e=document.getElementById('glassesEntity'), cfg=getConfig(model);
+            e.setAttribute('gltf-model',`/static/models/${model}.glb`);
+            e.setAttribute('scale',cfg.scale);
+            e.setAttribute('position',cfg.position);
+            e.setAttribute('rotation',cfg.rotation);
+            const pos=cfg.position.split(' ').map(Number), scl=parseFloat(cfg.scale.split(' ')[0]);
+            document.getElementById('sliderScale').value=scl;
+            document.getElementById('sliderX').value=pos[0];
+            document.getElementById('sliderY').value=pos[1];
+            document.getElementById('sliderZ').value=pos[2];
+            document.getElementById('valScale').textContent=scl.toFixed(3);
+            document.getElementById('valX').textContent=pos[0].toFixed(2);
+            document.getElementById('valY').textContent=pos[1].toFixed(2);
+            document.getElementById('valZ').textContent=pos[2].toFixed(2);
+        }
+        history.replaceState(null,'',`/prueba-virtual/${id}`);
+    }
+
+    function captureSnapshot() {
+        const s=document.getElementById('arScene');
+        if(!s||!s.canvas){alert('Espera a que cargue');return;}
+        const a=document.createElement('a');
+        a.download=`lensmatch-${Date.now()}.png`;
+        a.href=s.canvas.toDataURL('image/png');
+        a.click();
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebarPanel').classList.toggle('hidden');
+    }
+
+    console.log('[LensMatch] MindAR Full-Screen — modelo:', currentModelName);
+    </script>
+</body>
+</html>

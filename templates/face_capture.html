@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Análisis Facial | LensMatch{% endblock %}
+
+{% block content %}
+<div class="capture-container">
+    <div class="section-header">
+        <h2>Análisis de tu Rostro</h2>
+        <p>Toma una foto con tu cámara o sube una imagen para detectar la forma de tu rostro</p>
+    </div>
+
+    <!-- Camera / Preview -->
+    <div class="capture-viewport" id="captureViewport">
+        <video id="cameraFeed" autoplay playsinline muted style="display:none;"></video>
+        <img id="uploadPreview" style="display:none;width:100%;height:100%;object-fit:cover;">
+        <div class="face-guide-overlay" id="faceGuide"></div>
+        <div class="placeholder-msg" id="capturePlaceholder" style="color:var(--gray-400);">
+            <span class="icon">📷</span>
+            <p style="font-weight:600;">Captura o sube una foto de tu rostro</p>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
+        <button class="btn btn-primary" id="btnCapture" onclick="startCapture()">📷 Usar cámara</button>
+        <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">📁 Subir foto</button>
+        <button class="btn btn-primary" id="btnTake" style="display:none;" onclick="takePhoto()">📸 Tomar foto</button>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
+
+    <!-- Upload zone -->
+    <div class="upload-zone" onclick="document.getElementById('fileInput').click()" id="uploadZone">
+        <span class="icon">📁</span>
+        <p style="font-weight:600;margin-bottom:4px;">Arrastra una foto aquí o haz clic para seleccionar</p>
+        <p style="font-size:0.82rem;color:var(--gray-400);">JPG, PNG — Mira de frente con buena iluminación</p>
+    </div>
+
+    <!-- Result preview -->
+    <div id="analysisResult" style="display:none;margin-top:24px;">
+        <div class="card" style="padding:24px;text-align:left;">
+            <h3 style="margin-bottom:12px;">Resultado del Análisis</h3>
+            <div style="display:flex;gap:20px;align-items:center;margin-bottom:16px;">
+                <div style="width:80px;height:80px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:2rem;" id="resultIcon">👤</div>
+                <div>
+                    <div style="font-size:1.3rem;font-weight:700;" id="resultType">—</div>
+                    <div style="font-size:0.85rem;color:var(--gray-500);" id="resultConf">Confianza: —</div>
+                </div>
+            </div>
+            <p style="color:var(--gray-600);font-size:0.88rem;margin-bottom:16px;" id="resultDesc"></p>
+            <div id="resultChars" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;"></div>
+            <div style="display:flex;gap:12px;">
+                <a href="/resultados" class="btn btn-primary" id="btnResults">Ver Recomendaciones →</a>
+                <button class="btn btn-outline" onclick="resetCapture()">Intentar de nuevo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let cameraStream = null;
+
+async function startCapture() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 1280, height: 720, facingMode: 'user' }
+        });
+        cameraStream = stream;
+        const video = document.getElementById('cameraFeed');
+        video.srcObject = stream;
+        video.style.display = 'block';
+        document.getElementById('capturePlaceholder').style.display = 'none';
+        document.getElementById('uploadPreview').style.display = 'none';
+        document.getElementById('btnCapture').style.display = 'none';
+        document.getElementById('btnTake').style.display = 'inline-flex';
+        document.getElementById('uploadZone').style.display = 'none';
+    } catch (err) {
+        showToast('No se pudo acceder a la cámara', 'error');
+    }
+}
+
+function takePhoto() {
+    const video = document.getElementById('cameraFeed');
+    const c = document.createElement('canvas');
+    c.width = video.videoWidth;
+    c.height = video.videoHeight;
+    c.getContext('2d').drawImage(video, 0, 0);
+
+    c.toBlob(async (blob) => {
+        stopCamera();
+        const preview = document.getElementById('uploadPreview');
+        preview.src = URL.createObjectURL(blob);
+        preview.style.display = 'block';
+        await analyzeImage(blob);
+    }, 'image/jpeg', 0.9);
+}
+
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const preview = document.getElementById('uploadPreview');
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    document.getElementById('capturePlaceholder').style.display = 'none';
+    document.getElementById('cameraFeed').style.display = 'none';
+    document.getElementById('uploadZone').style.display = 'none';
+    analyzeImage(file);
+}
+
+async function analyzeImage(blob) {
+    showToast('Analizando tu rostro...', 'info');
+    try {
+        const result = await API.uploadPhoto(blob);
+        if (result.success) {
+            document.getElementById('resultType').textContent = `Rostro ${result.face_shape}`;
+            document.getElementById('resultConf').textContent = `Confianza: ${result.confidence}%`;
+            document.getElementById('resultDesc').textContent = result.description || '';
+
+            const charsEl = document.getElementById('resultChars');
+            charsEl.innerHTML = '';
+            (result.characteristics || []).forEach(c => {
+                charsEl.innerHTML += `<span class="badge badge-blue">${c}</span>`;
+            });
+
+            document.getElementById('analysisResult').style.display = 'block';
+            document.getElementById('btnResults').href = `/resultados?face=${result.face_shape}`;
+            localStorage.setItem('lm_face_shape', result.face_shape);
+            localStorage.setItem('lm_confidence', result.confidence);
+        } else {
+            showToast(result.error || 'No se detectó un rostro', 'error');
+        }
+    } catch (err) {
+        showToast('Error al analizar la imagen', 'error');
+    }
+}
+
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+    }
+    document.getElementById('cameraFeed').style.display = 'none';
+    document.getElementById('btnTake').style.display = 'none';
+    document.getElementById('btnCapture').style.display = 'inline-flex';
+}
+
+function resetCapture() {
+    stopCamera();
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('capturePlaceholder').style.display = 'flex';
+    document.getElementById('analysisResult').style.display = 'none';
+    document.getElementById('uploadZone').style.display = 'block';
+    document.getElementById('faceGuide').style.display = 'block';
+}
+</script>
+{% endblock %}
