@@ -7,6 +7,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
+
+    <!-- Ajustes globales para iconos Lucide -->
+    <style>
+        .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 4px;
+        }
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 2;
+            color: var(--primary, #2563eb);
+        }
+        /* Evita el "flash" mientras Lucide procesa los <i data-lucide> */
+        [data-lucide]:not(svg) {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+        }
+    </style>
+
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -14,7 +37,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
-                <span class="logo-icon">👓</span>
+                <span class="logo-icon"><i data-lucide="glasses"></i></span>
                 <span class="logo-text">LensMatch</span>
             </a>
             <div class="nav-links">
@@ -40,7 +63,18 @@
         </div>
     </footer>
 
+    <!-- App JS -->
     <script src="/static/js/app.js"></script>
+
+    <!-- Iconos Lucide (debe cargar antes que los scripts de cada página) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Scripts de cada template -->
     {% block scripts %}{% endblock %}
+
+    <!-- Renderizar todos los <i data-lucide> como SVG (una vez que el DOM y los templates se cargaron) -->
+    <script>
+        if (window.lucide) lucide.createIcons();
+    </script>
 </body>
 </html>

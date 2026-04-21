@@ -2,70 +2,808 @@
 {% block title %}LensMatch — Encuentra los lentes perfectos para tu rostro{% endblock %}
 
 {% block content %}
-<!-- Hero -->
-<section class="hero">
-    <div class="hero-container">
-        <h1>Encuentra los lentes perfectos para tu rostro</h1>
-        <p>Sube una foto o usa tu cámara y nuestro sistema detectará la forma de tu rostro para recomendarte los armazones ideales.</p>
-        <div class="hero-actions">
-            <a href="/analisis" class="btn btn-primary btn-lg">Comenzar Análisis</a>
-            <a href="/catalogo" class="btn btn-outline btn-lg">Ver Catálogo</a>
+<style>
+    /* ============================================
+       ICONOS LUCIDE (tamaños por contexto)
+       ============================================ */
+    .slide-placeholder svg { width: 64px; height: 64px; stroke-width: 1.5; }
+    .slider-arrow svg { width: 22px; height: 22px; stroke-width: 2; }
+    .labels-arrow svg { width: 20px; height: 20px; stroke-width: 2; }
+    .label-card-meta svg { width: 14px; height: 14px; stroke-width: 2; }
+    .how-step-icon svg { width: 28px; height: 28px; stroke-width: 1.75; color: var(--primary, #2563eb); }
+
+    /* ============================================
+       HERO SLIDER
+       ============================================ */
+    .hero-slider {
+        position: relative;
+        width: 100%;
+        height: clamp(480px, 80vh, 720px);
+        overflow: hidden;
+        background: #0f172a;
+    }
+
+    .slides-container { position: relative; width: 100%; height: 100%; }
+
+    .slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.9s ease, visibility 0.9s ease;
+        z-index: 1;
+    }
+
+    .slide.active { opacity: 1; visibility: visible; z-index: 2; }
+
+    .slide video,
+    .slide .slide-placeholder {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .slide video:not([data-loaded="true"]) { display: none; }
+    .slide video[data-loaded="true"] ~ .slide-placeholder { display: none; }
+
+    .slide-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.25);
+    }
+    .slide-1 .slide-placeholder { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+    .slide-2 .slide-placeholder { background: linear-gradient(135deg, #7c2d12 0%, #ea580c 100%); }
+    .slide-3 .slide-placeholder { background: linear-gradient(135deg, #064e3b 0%, #10b981 100%); }
+
+    .slide-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.65) 100%);
+        z-index: 1;
+    }
+
+    .slide-content {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 48px clamp(24px, 6vw, 90px);
+        z-index: 2;
+    }
+
+    .slide-text {
+        max-width: 560px;
+        color: #ffffff;
+        text-align: right;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+    }
+
+    .slide.active .slide-text { opacity: 1; transform: translateY(0); }
+
+    .slide-eyebrow {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 18px;
+    }
+
+    .slide-title {
+        font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        margin: 0 0 20px 0;
+        color: #ffffff;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .slide-title em {
+        font-style: italic;
+        font-weight: 400;
+        font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .slide-description {
+        font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.9);
+        margin: 0 0 32px 0;
+        text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .slide-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .slide-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 32px;
+        border-radius: 999px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 2px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .slide-btn-primary { background: #fff; color: #1e293b; border-color: #fff; }
+    .slide-btn-primary:hover {
+        background: transparent; color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .slide-btn-outline {
+        background: transparent;
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.7);
+    }
+
+    .slide-btn-outline:hover {
+        background: #fff; color: #1e293b; border-color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .slider-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        cursor: pointer;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+    }
+
+    .slider-arrow:hover {
+        background: rgba(255, 255, 255, 0.95);
+        color: #1e293b;
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    .slider-arrow-prev { left: 24px; }
+    .slider-arrow-next { right: 24px; }
+
+    .slider-dots {
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+    }
+
+    .slider-dot {
+        width: 36px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.35);
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.3s ease;
+    }
+
+    .slider-dot:hover { background: rgba(255, 255, 255, 0.6); }
+    .slider-dot.active { background: rgba(255, 255, 255, 0.9); width: 56px; }
+
+    /* ============================================
+       ESTILOS DESTACADOS (Labels)
+       ============================================ */
+    .labels-section {
+        padding: 90px 24px;
+        background: #f5f4ef;
+        position: relative;
+    }
+
+    .labels-heading { text-align: center; margin-bottom: 44px; }
+
+    .labels-title {
+        font-size: clamp(1.75rem, 3vw, 2.25rem);
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 10px 0;
+        letter-spacing: -0.02em;
+    }
+
+    .labels-subtitle {
+        color: #64748b;
+        font-size: 1.05rem;
+        margin: 0;
+    }
+
+    .labels-wrapper {
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .labels-track-wrapper {
+        overflow: hidden;
+        padding: 20px 8px;
+    }
+
+    .labels-track {
+        display: flex;
+        gap: 18px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        padding: 8px 4px;
+        scrollbar-width: none;
+    }
+    .labels-track::-webkit-scrollbar { display: none; }
+
+    .label-card {
+        flex: 0 0 260px;
+        height: 380px;
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        scroll-snap-align: start;
+        cursor: pointer;
+        transition: transform 0.35s ease, box-shadow 0.35s ease;
+        text-decoration: none;
+        isolation: isolate;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .label-card:hover { transform: translateY(-6px); box-shadow: 0 16px 30px rgba(0, 0, 0, 0.15); }
+    .label-card:nth-child(even) { margin-top: 24px; }
+
+    .label-card-bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        background-color: #2a2a2a;
+        transition: transform 0.6s ease;
+    }
+
+    .label-card:hover .label-card-bg { transform: scale(1.06); }
+
+    .label-1 .label-card-bg { background-image: linear-gradient(135deg, #3d2817 0%, #1a1208 100%); }
+    .label-2 .label-card-bg { background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+    .label-3 .label-card-bg { background-image: linear-gradient(135deg, #4c1d24 0%, #2a0e12 100%); }
+    .label-4 .label-card-bg { background-image: linear-gradient(135deg, #374151 0%, #1f2937 100%); }
+    .label-5 .label-card-bg { background-image: linear-gradient(135deg, #3a2a1f 0%, #1a1008 100%); }
+
+    .label-card-tint {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.55) 100%);
+        z-index: 1;
+    }
+
+    .label-card-name {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0 16px 70px;
+        z-index: 2;
+        color: #fff;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .label-card-meta {
+        position: absolute;
+        bottom: 22px;
+        left: 22px;
+        right: 22px;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .labels-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #fff;
+        border: 1.5px solid #e5e7eb;
+        color: #1e293b;
+        cursor: pointer;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .labels-arrow:hover {
+        background: #1e293b;
+        color: #fff;
+        border-color: #1e293b;
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    .labels-arrow-prev { left: -8px; }
+    .labels-arrow-next { right: -8px; }
+
+    /* ============================================
+       ¿CÓMO FUNCIONA?
+       ============================================ */
+    .how-it-works {
+        padding: 90px 24px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        position: relative;
+    }
+
+    .how-container { max-width: 1200px; margin: 0 auto; }
+
+    .how-header { text-align: center; margin-bottom: 56px; }
+
+    .how-eyebrow {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 3px;
+        color: var(--primary, #2563eb);
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+
+    .how-title {
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 14px 0;
+        letter-spacing: -0.02em;
+    }
+
+    .how-subtitle {
+        font-size: 1.05rem;
+        color: #64748b;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    .how-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+        position: relative;
+    }
+
+    .how-grid::before {
+        content: "";
+        position: absolute;
+        top: 54px;
+        left: 12%;
+        right: 12%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent 0%, #cbd5e1 15%, #cbd5e1 85%, transparent 100%);
+        z-index: 0;
+    }
+
+    .how-step {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+        border-radius: 18px;
+        padding: 34px 22px 26px;
+        text-align: center;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .how-step:hover { transform: translateY(-6px); box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1); }
+
+    .how-step-num {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary, #2563eb) 0%, #4f46e5 100%);
+        color: #fff;
+        font-size: 1.3rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+    }
+
+    .how-step-icon {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .how-step-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.01em;
+    }
+
+    .how-step-desc {
+        font-size: 0.92rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .how-grid { grid-template-columns: repeat(2, 1fr); }
+        .how-grid::before { display: none; }
+    }
+
+    @media (max-width: 768px) {
+        .hero-slider { height: clamp(520px, 75vh, 640px); }
+        .slide-content { justify-content: center; padding: 32px 24px; }
+        .slide-text { text-align: center; max-width: 100%; }
+        .slide-actions { justify-content: center; }
+        .slider-arrow { width: 42px; height: 42px; }
+        .slider-arrow-prev { left: 12px; }
+        .slider-arrow-next { right: 12px; }
+        .slide-btn { padding: 12px 24px; font-size: 0.95rem; }
+
+        .labels-section { padding: 60px 16px; }
+        .label-card { flex: 0 0 220px; height: 320px; }
+        .labels-arrow { display: none; }
+
+        .how-it-works { padding: 60px 20px; }
+    }
+
+    @media (max-width: 520px) {
+        .how-grid { grid-template-columns: 1fr; gap: 16px; }
+    }
+</style>
+
+<!-- ============================================
+     HERO SLIDER
+     ============================================ -->
+<section class="hero-slider" id="heroSlider">
+    <div class="slides-container">
+
+        <!-- SLIDE 1 — Análisis Facial -->
+        <div class="slide slide-1 active" data-slide="0">
+            <video muted loop playsinline preload="auto">
+                <source src="/static/videos/Prueba1.mp4" type="video/mp4">
+            </video>
+            <div class="slide-placeholder"><i data-lucide="glasses"></i></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <div class="slide-text">
+                    <span class="slide-eyebrow">Análisis facial con IA</span>
+                    <h1 class="slide-title">Encuentra tus <em>lentes</em> perfectos</h1>
+                    <p class="slide-description">Sube una foto o usa tu cámara y detectaremos la forma de tu rostro para recomendarte los armazones ideales en segundos.</p>
+                    <div class="slide-actions">
+                        <a href="/analisis" class="slide-btn slide-btn-primary">Comenzar análisis</a>
+                        <a href="/guia-rostros" class="slide-btn slide-btn-outline">Saber más</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2 — Catálogo -->
+        <div class="slide slide-2" data-slide="1">
+            <video muted loop playsinline preload="auto">
+                <source src="/static/videos/Prueba2.mp4" type="video/mp4">
+            </video>
+            <div class="slide-placeholder"><i data-lucide="glasses"></i></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <div class="slide-text">
+                    <span class="slide-eyebrow">Explora nuestro catálogo</span>
+                    <h1 class="slide-title">Armazones para <em>cada</em> estilo</h1>
+                    <p class="slide-description">Descubre una amplia selección de lentes diseñados para complementar tu personalidad y resaltar tus mejores rasgos.</p>
+                    <div class="slide-actions">
+                        <a href="/catalogo" class="slide-btn slide-btn-primary">Ver catálogo</a>
+                        <a href="/analisis" class="slide-btn slide-btn-outline">Análisis facial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3 — Guía -->
+        <div class="slide slide-3" data-slide="2">
+            <video muted loop playsinline preload="auto">
+                <source src="/static/videos/Prueba3.mp4" type="video/mp4">
+            </video>
+            <div class="slide-placeholder"><i data-lucide="lightbulb"></i></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <div class="slide-text">
+                    <span class="slide-eyebrow">Guía de formas faciales</span>
+                    <h1 class="slide-title">Conoce tu <em>tipo</em> de rostro</h1>
+                    <p class="slide-description">Aprende a identificar tu forma de rostro y descubre qué tipo de armazones te favorecen más en nuestra guía completa.</p>
+                    <div class="slide-actions">
+                        <a href="/guia-rostros" class="slide-btn slide-btn-primary">Ver guía</a>
+                        <a href="/catalogo" class="slide-btn slide-btn-outline">Ver lentes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <button class="slider-arrow slider-arrow-prev" onclick="changeSlide(-1)" aria-label="Anterior">
+        <i data-lucide="arrow-left"></i>
+    </button>
+    <button class="slider-arrow slider-arrow-next" onclick="changeSlide(1)" aria-label="Siguiente">
+        <i data-lucide="arrow-right"></i>
+    </button>
+
+    <div class="slider-dots" id="sliderDots">
+        <button class="slider-dot active" onclick="goToSlide(0)" aria-label="Slide 1"></button>
+        <button class="slider-dot" onclick="goToSlide(1)" aria-label="Slide 2"></button>
+        <button class="slider-dot" onclick="goToSlide(2)" aria-label="Slide 3"></button>
+    </div>
+</section>
+
+<!-- ============================================
+     ESTILOS DESTACADOS
+     ============================================ -->
+<section class="labels-section">
+    <div class="labels-heading">
+        <h2 class="labels-title">Estilos que amamos</h2>
+        <p class="labels-subtitle">Modelos seleccionados para cada personalidad</p>
+    </div>
+
+    <div class="labels-wrapper">
+        <button class="labels-arrow labels-arrow-prev" onclick="scrollLabels(-1)" aria-label="Anterior">
+            <i data-lucide="chevron-left"></i>
+        </button>
+
+        <div class="labels-track-wrapper">
+            <div class="labels-track" id="labelsTrack">
+
+                <a href="/catalogo" class="label-card label-1">
+                    <div class="label-card-bg" style="background-image:url('/static/images/clasicos.jpg')"></div>                //////////
+                    <div class="label-card-tint"></div>
+                    <div class="label-card-name">Clásicos</div>
+                    <div class="label-card-meta">
+                        <span>Atemporal</span>
+                        <i data-lucide="arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="/catalogo" class="label-card label-2">
+                    <div class="label-card-bg"></div>
+                    <div class="label-card-tint"></div>
+                    <div class="label-card-name">Aviador</div>
+                    <div class="label-card-meta">
+                        <span>Icónico</span>
+                        <i data-lucide="arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="/catalogo" class="label-card label-3">
+                    <div class="label-card-bg"></div>
+                    <div class="label-card-tint"></div>
+                    <div class="label-card-name">Cat Eye</div>
+                    <div class="label-card-meta">
+                        <span>Elegante</span>
+                        <i data-lucide="arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="/catalogo" class="label-card label-4">
+                    <div class="label-card-bg"></div>
+                    <div class="label-card-tint"></div>
+                    <div class="label-card-name">Minimalista</div>
+                    <div class="label-card-meta">
+                        <span>Moderno</span>
+                        <i data-lucide="arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="/catalogo" class="label-card label-5">
+                    <div class="label-card-bg"></div>
+                    <div class="label-card-tint"></div>
+                    <div class="label-card-name">Vintage</div>
+                    <div class="label-card-meta">
+                        <span>Retro</span>
+                        <i data-lucide="arrow-right"></i>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <button class="labels-arrow labels-arrow-next" onclick="scrollLabels(1)" aria-label="Siguiente">
+            <i data-lucide="chevron-right"></i>
+        </button>
+    </div>
+</section>
+
+<!-- ============================================
+     ¿CÓMO FUNCIONA?
+     ============================================ -->
+<section class="how-it-works">
+    <div class="how-container">
+        <div class="how-header">
+            <span class="how-eyebrow">Proceso simple</span>
+            <h2 class="how-title">¿Cómo funciona?</h2>
+            <p class="how-subtitle">Cuatro pasos rápidos para descubrir los armazones ideales para tu rostro.</p>
+        </div>
+
+        <div class="how-grid">
+            <div class="how-step">
+                <div class="how-step-num">1</div>
+                <div class="how-step-icon"><i data-lucide="camera"></i></div>
+                <h3 class="how-step-title">Toma una foto</h3>
+                <p class="how-step-desc">Usa tu cámara o sube una imagen de tu rostro.</p>
+            </div>
+
+            <div class="how-step">
+                <div class="how-step-num">2</div>
+                <div class="how-step-icon"><i data-lucide="scan-face"></i></div>
+                <h3 class="how-step-title">Analizamos tu rostro</h3>
+                <p class="how-step-desc">Detectamos la forma y proporciones de tu cara con IA.</p>
+            </div>
+
+            <div class="how-step">
+                <div class="how-step-num">3</div>
+                <div class="how-step-icon"><i data-lucide="sparkles"></i></div>
+                <h3 class="how-step-title">Recomendaciones</h3>
+                <p class="how-step-desc">Te mostramos los lentes más compatibles contigo.</p>
+            </div>
+
+            <div class="how-step">
+                <div class="how-step-num">4</div>
+                <div class="how-step-icon"><i data-lucide="glasses"></i></div>
+                <h3 class="how-step-title">Prueba virtual</h3>
+                <p class="how-step-desc">Visualiza cómo lucen en tu cara en tiempo real.</p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Features -->
-<section class="features-section grid-3">
-    <div class="feature-card">
-        <div class="feature-icon">📷</div>
-        <h3>Detección Facial</h3>
-        <p>Análisis automático de la forma de tu rostro con reconocimiento de rasgos clave usando IA.</p>
-    </div>
-    <div class="feature-card">
-        <div class="feature-icon">🔍</div>
-        <h3>Recomendaciones Personalizadas</h3>
-        <p>Sugerencias basadas en compatibilidad entre tu tipo de rostro y el estilo de armazón.</p>
-    </div>
-    <div class="feature-card">
-        <div class="feature-icon">👓</div>
-        <h3>Prueba Virtual</h3>
-        <p>Visualiza cómo se ven los lentes en tu cara en tiempo real con nuestra cámara AR.</p>
-    </div>
-</section>
-
-<!-- How it works -->
-<section class="steps-section">
-    <div class="steps-container">
-        <h2>¿Cómo funciona?</h2>
-        <div class="steps-grid">
-            <div>
-                <div class="step-num">1</div>
-                <div class="step-title">Toma una foto</div>
-                <div class="step-desc">Usa tu cámara o sube una imagen de tu rostro</div>
-            </div>
-            <div>
-                <div class="step-num">2</div>
-                <div class="step-title">Analizamos tu rostro</div>
-                <div class="step-desc">Detectamos la forma y proporciones de tu cara con IA</div>
-            </div>
-            <div>
-                <div class="step-num">3</div>
-                <div class="step-title">Recomendaciones</div>
-                <div class="step-desc">Te mostramos los lentes más compatibles contigo</div>
-            </div>
-            <div>
-                <div class="step-num">4</div>
-                <div class="step-title">Prueba virtual</div>
-                <div class="step-desc">Visualiza cómo lucen en tu cara en tiempo real</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA -->
-<section style="text-align:center;padding:60px 24px;background:var(--blue-light);">
+<!-- ============================================
+     CTA FINAL
+     ============================================ -->
+<section style="text-align:center;padding:60px 24px;background:var(--blue-light, #eff6ff);">
     <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:8px;">¿No sabes cuál es la forma de tu rostro?</h2>
-    <p style="color:var(--gray-500);margin-bottom:20px;">Nuestro sistema lo detecta por ti en segundos.</p>
-    <a href="/analisis" class="btn btn-primary btn-lg">Detectar mi tipo de rostro →</a>
+    <p style="color:var(--gray-500, #64748b);margin-bottom:20px;">Nuestro sistema lo detecta por ti en segundos.</p>
+    <a href="/analisis" class="btn btn-primary btn-lg">Detectar mi tipo de rostro</a>
 </section>
+
+<script>
+    // ============================================
+    // HERO SLIDER
+    // ============================================
+    (function () {
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+        let autoplayTimer = null;
+        const AUTOPLAY_INTERVAL = 7000;
+
+        function showSlide(index) {
+            slides.forEach((s, i) => {
+                const isActive = i === index;
+                s.classList.toggle('active', isActive);
+
+                const video = s.querySelector('video');
+                if (video && video.dataset.loaded === 'true') {
+                    if (isActive) {
+                        try { video.currentTime = 0; } catch (e) {}
+                        const p = video.play();
+                        if (p !== undefined) p.catch(() => {});
+                    } else {
+                        video.pause();
+                    }
+                }
+            });
+            dots.forEach((d, i) => d.classList.toggle('active', i === index));
+            currentSlide = index;
+        }
+
+        window.changeSlide = function (direction) {
+            const next = (currentSlide + direction + totalSlides) % totalSlides;
+            showSlide(next);
+            resetAutoplay();
+        };
+
+        window.goToSlide = function (index) {
+            showSlide(index);
+            resetAutoplay();
+        };
+
+        function startAutoplay() {
+            autoplayTimer = setInterval(() => changeSlide(1), AUTOPLAY_INTERVAL);
+        }
+
+        function resetAutoplay() {
+            if (autoplayTimer) clearInterval(autoplayTimer);
+            startAutoplay();
+        }
+
+        const slider = document.getElementById('heroSlider');
+        if (slider) {
+            slider.addEventListener('mouseenter', () => {
+                if (autoplayTimer) clearInterval(autoplayTimer);
+            });
+            slider.addEventListener('mouseleave', startAutoplay);
+
+            let touchStartX = 0, touchEndX = 0;
+            slider.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            slider.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+            }, { passive: true });
+        }
+
+        document.querySelectorAll('.slide video').forEach((video, idx) => {
+            const source = video.querySelector('source');
+            const src = source ? (source.getAttribute('src') || '').trim() : '';
+            if (src) {
+                video.dataset.loaded = 'true';
+                if (idx === 0) {
+                    const p = video.play();
+                    if (p !== undefined) p.catch(() => {});
+                }
+            }
+        });
+
+        startAutoplay();
+    })();
+
+    // ============================================
+    // CARRUSEL DE ESTILOS
+    // ============================================
+    function scrollLabels(direction) {
+        const track = document.getElementById('labelsTrack');
+        if (!track) return;
+        track.scrollBy({ left: direction * 278, behavior: 'smooth' });
+    }
+
+    // Re-renderizar iconos Lucide (por si el base.html no lo hace)
+    if (window.lucide) lucide.createIcons();
+</script>
 {% endblock %}

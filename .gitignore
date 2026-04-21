@@ -1,4 +1,32 @@
-venv/
+# Videos (son muy pesados, no van a GitHub)
+static/videos/*.mp4
+static/videos/*.mov
+static/videos/*.avi
+
+# Python
 __pycache__/
 *.pyc
-lensmatch.db
+*.pyo
+venv/
+env/
+.venv/
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Entorno
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Archivos grandes temporales
+*.log

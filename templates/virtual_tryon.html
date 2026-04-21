@@ -202,6 +202,11 @@
     position: "0 -0.34 -0.33",
     rotation: "0 0 0",
     },
+    LentesAviador: {
+    scale: "700 700 700",
+    position: "0 0 0",
+    rotation: "0 0 0",
+    },
         // NuevoModelo: { scale:"0.01 0.01 0.01", position:"0 0 0.05", rotation:"0 0 0" },
     };
     const DEFAULT_CONFIG = { scale:"0.01 0.01 0.01", position:"0 0 0.05", rotation:"0 0 0" };
@@ -237,6 +242,9 @@
             e.setAttribute('position',cfg.position);
             e.setAttribute('rotation',cfg.rotation);
             const pos=cfg.position.split(' ').map(Number), scl=parseFloat(cfg.scale.split(' ')[0]);
+            document.getElementById('sliderScale').max = scl * 3;
+            document.getElementById('sliderScale').min = scl * 0.1;
+            document.getElementById('sliderScale').step = scl * 0.01;
             document.getElementById('sliderScale').value=scl;
             document.getElementById('sliderX').value=pos[0];
             document.getElementById('sliderY').value=pos[1];
