@@ -1,7 +1,7 @@
 # Videos (son muy pesados, no van a GitHub)
-static/videos/*.mp4
-static/videos/*.mov
-static/videos/*.avi
+# static/videos/*.mp4
+# static/videos/*.mov
+# static/videos/*.avi
 
 # Python
 __pycache__/
