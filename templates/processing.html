@@ -7,11 +7,5 @@
     <p style="color:var(--gray-500);">Detectando forma facial y calculando compatibilidad...</p>
     <p style="color:var(--gray-400);font-size:0.82rem;margin-top:20px;">Esto tomará solo unos segundos</p>
 </div>
-<script>
-    // Auto-redirect if coming from analysis
-    const shape = localStorage.getItem('lm_face_shape');
-    if (shape) {
-        setTimeout(() => { window.location.href = `/resultados?face=${shape}`; }, 2000);
-    }
-</script>
+<script src="/static/js/processing.js"></script>
 {% endblock %}

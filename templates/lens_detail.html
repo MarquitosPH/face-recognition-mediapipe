@@ -1,63 +1,230 @@
 {% extends "base.html" %}
 {% block title %}{{ glass.name }} | LensMatch{% endblock %}
+
 {% block content %}
-<div class="detail-layout">
-    <div class="detail-gallery">
-        <img src="{{ glass.image }}" alt="{{ glass.name }}" class="detail-main-img" id="mainImg">
-        <div class="detail-thumbs">
-            {% for img in glass.images %}
-            <img src="{{ img }}" alt="Vista {{ loop.index }}" class="detail-thumb {% if loop.first %}active{% endif %}"
-                 onclick="document.getElementById('mainImg').src=this.src;document.querySelectorAll('.detail-thumb').forEach(t=>t.classList.remove('active'));this.classList.add('active');">
+<link rel="stylesheet" href="/static/css/lens_detail.css">
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+    <nav class="breadcrumb">
+        <a href="/">Inicio</a>
+        <i data-lucide="chevron-right"></i>
+        <a href="/catalogo">Catálogo</a>
+        <i data-lucide="chevron-right"></i>
+        <span class="current">{{ glass.name }}</span>
+    </nav>
+</div>
+
+<!-- ============================================
+     STAGE EDITORIAL (split-screen Mykita)
+     ============================================ -->
+<section class="stage-section">
+
+    {% set all_images = [] %}
+    {% if glass.images %}
+        {% for img in glass.images %}
+            {% set _ = all_images.append(img) %}
+        {% endfor %}
+    {% else %}
+        {% if glass.image %}{% set _ = all_images.append(glass.image) %}{% endif %}
+        {% if glass.image_hover and glass.image_hover != glass.image %}{% set _ = all_images.append(glass.image_hover) %}{% endif %}
+    {% endif %}
+
+    <div class="stage-grid">
+
+        <!-- Panel izquierdo: lifestyle / hover image (ambiente) -->
+        <div class="stage-lifestyle">
+            {% if all_images %}
+                {% for img in all_images %}
+                <img src="{{ img }}" alt="{{ glass.name }} - estilo {{ loop.index }}"
+                     class="stage-img-lifestyle{% if loop.first %} active{% endif %}"
+                     data-index="{{ loop.index0 }}"
+                     onerror="this.style.visibility='hidden'">
+                {% endfor %}
+            {% endif %}
+
+            <a href="/prueba-virtual/{{ glass.id }}" class="stage-tryon">
+                <span class="stage-tryon-icon"><i data-lucide="glasses"></i></span>
+                <span>Probar virtualmente</span>
+            </a>
+        </div>
+
+        <!-- Panel derecho: producto solo -->
+        <div class="stage-product">
+            {% if all_images %}
+                {% for img in all_images %}
+                <img src="{{ img }}" alt="{{ glass.name }} - producto {{ loop.index }}"
+                     class="stage-img-product{% if loop.first %} active{% endif %}"
+                     data-index="{{ loop.index0 }}"
+                     onerror="this.style.visibility='hidden'">
+                {% endfor %}
+            {% endif %}
+
+            <button class="floating-fav" onclick="toggleFav(this)" aria-label="Guardar en favoritos">
+                <i data-lucide="heart"></i>
+            </button>
+
+            <!-- Info card flotante (sobre el panel derecho) -->
+            <div class="floating-info-card">
+                <p class="info-brand">{{ glass.brand }}</p>
+                <h1 class="info-name">{{ glass.name }}</h1>
+                <p class="info-tagline">{{ glass.style }}{% if glass.material %} · {{ glass.material }}{% endif %}</p>
+
+                <span class="match-pill" id="matchPill">
+                    <span class="match-pill-dot"></span>
+                    <span id="matchPillText">— compatible</span>
+                </span>
+
+                <a href="/prueba-virtual/{{ glass.id }}" class="info-cta">
+                    <i data-lucide="glasses"></i>
+                    <span>Probar virtualmente</span>
+                </a>
+                <a href="/catalogo" class="info-cta-secondary">
+                    <i data-lucide="arrow-left"></i>
+                    <span>Volver al catálogo</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles inferiores del stage -->
+    {% if all_images|length > 1 %}
+    <div class="stage-controls">
+        <button class="stage-arrow" onclick="navStage(-1)" aria-label="Anterior">
+            <i data-lucide="arrow-left"></i>
+        </button>
+        <div class="stage-dots" id="stageDots">
+            {% for img in all_images %}
+            <button class="stage-dot{% if loop.first %} active{% endif %}"
+                    onclick="goToStage({{ loop.index0 }})"
+                    aria-label="Vista {{ loop.index }}"></button>
             {% endfor %}
         </div>
+        <button class="stage-arrow" onclick="navStage(1)" aria-label="Siguiente">
+            <i data-lucide="arrow-right"></i>
+        </button>
+    </div>
+    {% endif %}
+</section>
+
+<!-- ============================================
+     SECCIÓN "ACERCA DE [NOMBRE]"
+     ============================================ -->
+<section class="about-section">
+    <p class="about-eyebrow">Detalles del producto</p>
+    <h2 class="about-title">Acerca de <em>{{ glass.name }}</em></h2>
+
+    <div class="specs-tabs" role="tablist">
+        <button class="specs-tab active" onclick="switchTab('description')" data-tab="description">
+            <i data-lucide="file-text" class="tab-icon"></i>
+            <span>Descripción</span>
+        </button>
+        <button class="specs-tab" onclick="switchTab('specs')" data-tab="specs">
+            <i data-lucide="list" class="tab-icon"></i>
+            <span>Características</span>
+        </button>
+        <button class="specs-tab" onclick="switchTab('compat')" data-tab="compat">
+            <i data-lucide="users" class="tab-icon"></i>
+            <span>Compatibilidad</span>
+        </button>
     </div>
 
-    <div class="detail-info">
-        <h1>{{ glass.name }}</h1>
-        <div class="detail-brand">{{ glass.brand }}</div>
-        <p class="detail-desc">{{ glass.description }}</p>
+    <!-- TAB: Descripción -->
+    <div class="specs-content active" id="tab-description">
+        <p class="long-description">{{ glass.description }}</p>
 
-        <div class="detail-specs">
-            <div class="spec-item">
-                <div class="spec-label">Estilo</div>
-                <div class="spec-value">{{ glass.style }}</div>
-            </div>
-            <div class="spec-item">
-                <div class="spec-label">Material</div>
-                <div class="spec-value">{{ glass.material }}</div>
-            </div>
-            <div class="spec-item">
-                <div class="spec-label">Categoría</div>
-                <div class="spec-value">{{ glass.category }}</div>
-            </div>
-            <div class="spec-item">
-                <div class="spec-label">Género</div>
-                <div class="spec-value">{{ glass.gender }}</div>
-            </div>
+        {% if glass.tags %}
+        <div class="info-tags">
+            {% for tag in glass.tags %}
+            <span class="info-tag">{{ tag }}</span>
+            {% endfor %}
         </div>
+        {% endif %}
+    </div>
 
-        <div style="margin-bottom:20px;">
-            <div class="filter-label" style="margin-bottom:6px;">Compatible con rostros</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                {% for face in glass.compatible_faces %}
-                <span class="badge badge-green">{{ face }}</span>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div style="margin-bottom:24px;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div class="compatibility-bar" style="width:120px;height:8px;">
-                    <div class="compatibility-fill" style="width:{{ glass.compatibility }}%"></div>
+    <!-- TAB: Características -->
+    <div class="specs-content" id="tab-specs">
+        <div class="specs-grid">
+            <div class="spec-item">
+                <i data-lucide="layers"></i>
+                <div class="spec-content">
+                    <p class="spec-label">Material</p>
+                    <p class="spec-value">{{ glass.material or '—' }}</p>
                 </div>
-                <span class="compatibility-text" style="font-size:0.9rem;">{{ glass.compatibility }}% compatibilidad</span>
+            </div>
+
+            <div class="spec-item">
+                <i data-lucide="shapes"></i>
+                <div class="spec-content">
+                    <p class="spec-label">Estilo</p>
+                    <p class="spec-value">{{ glass.style or '—' }}</p>
+                </div>
+            </div>
+
+            <div class="spec-item">
+                <i data-lucide="user"></i>
+                <div class="spec-content">
+                    <p class="spec-label">Género</p>
+                    <p class="spec-value">{{ glass.gender or 'Unisex' }}</p>
+                </div>
+            </div>
+
+            <div class="spec-item">
+                <i data-lucide="tag"></i>
+                <div class="spec-content">
+                    <p class="spec-label">Categoría</p>
+                    <p class="spec-value">{{ glass.category or '—' }}</p>
+                </div>
+            </div>
+
+            <div class="spec-item">
+                <i data-lucide="award"></i>
+                <div class="spec-content">
+                    <p class="spec-label">Marca</p>
+                    <p class="spec-value">{{ glass.brand or '—' }}</p>
+                </div>
+            </div>
+
+            {% if glass.model_3d %}
+            <div class="spec-item">
+                <i data-lucide="box"></i>
+                <div class="spec-content">
+                    <p class="spec-label">Modelo 3D</p>
+                    <p class="spec-value">Disponible para prueba virtual</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- TAB: Compatibilidad -->
+    <div class="specs-content" id="tab-compat">
+
+        <!-- Match contextual: solo si el rostro guardado coincide -->
+        <div class="face-match-block" id="faceMatchBlock">
+            <div class="face-match-icon"><i data-lucide="scan-face"></i></div>
+            <div class="face-match-text">
+                <p class="face-match-label">Ideal para ti</p>
+                <p class="face-match-value" id="faceMatchText">Compatible con tu rostro</p>
             </div>
         </div>
 
-        <div class="detail-actions">
-            <a href="/prueba-virtual/{{ glass.id }}" class="btn btn-primary btn-lg">👓 Probar virtualmente</a>
-            <a href="/resultados" class="btn btn-outline">← Ver más opciones</a>
+        <p class="long-description" style="margin-bottom: 24px;">
+            Este armazón está diseñado para complementar las siguientes formas de rostro:
+        </p>
+        <div class="faces-list">
+            {% if glass.compatible_faces %}
+                {% for face in glass.compatible_faces %}
+                <span class="face-chip" data-face="{{ face }}">
+                    <span class="face-chip-dot"></span>
+                    <span>{{ face }}</span>
+                </span>
+                {% endfor %}
+            {% else %}
+                <p style="color:#64748b;">Sin información de compatibilidad.</p>
+            {% endif %}
         </div>
     </div>
-</div>
+</section>
+
+<script src="/static/js/lens_detail.js"></script>
 {% endblock %}

@@ -34,6 +34,7 @@ def init_db():
             compatible_faces TEXT NOT NULL,
             description TEXT,
             image       TEXT,
+            image_hover TEXT,
             images      TEXT,
             tags        TEXT,
             model_3d    TEXT
@@ -62,35 +63,177 @@ def init_db():
 
 
 def _seed_glasses(cursor):
+    # ====================================================================
+    # IMÁGENES - FILTRADAS: solo fotos de LENTES PRODUCTO sobre fondo
+    # claro/neutro (evitamos modelos, exteriores, playa, etc.)
+    # ====================================================================
+    # Estructura dual:
+    #   image       → foto principal (reposo)
+    #   image_hover → foto alternativa (al pasar el cursor)
+    # ====================================================================
+
+    # Locales
+    IMG_CLASICO = "/static/images/clasicos.jpg"
+    IMG_AVIADOR_1 = "/static/images/LentesAviador01.jpg"
+    IMG_AVIADOR_2 = "/static/images/LentesAviador02.jpg"
+    IMG_AVIADOR_3 = "/static/images/LentesAviador03.jpg"
+    IMG_AVIADOR_4 = "/static/images/LentesAviador04.jpg"
+
+    # Externas — todas fotos de lentes en fondo blanco/neutro (tipo catálogo e-commerce)
+    # Seleccionadas para look uniforme (no modelos, no exteriores)
+    UX_GLASSES_01 = "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&q=80&auto=format"
+    UX_GLASSES_02 = "https://images.unsplash.com/photo-1577803645773-f96470509666?w=800&q=80&auto=format"
+    UX_GLASSES_03 = "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&q=80&auto=format"
+    UX_GLASSES_04 = "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&q=80&auto=format"
+    UX_GLASSES_05 = "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=800&q=80&auto=format"
+    UX_GLASSES_06 = "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80&auto=format"
+    UX_GLASSES_07 = "https://images.unsplash.com/photo-1604785555196-1023b6e22eaa?w=800&q=80&auto=format"
+    UX_GLASSES_08 = "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?w=800&q=80&auto=format"
+    UX_GLASSES_09 = "https://images.unsplash.com/photo-1508296695146-257a814070b4?w=800&q=80&auto=format"
+    UX_GLASSES_10 = "https://images.unsplash.com/photo-1577744486770-020ab432da65?w=800&q=80&auto=format"
+    UX_GLASSES_11 = "https://images.unsplash.com/photo-1600208681548-2a5a8cba86a4?w=800&q=80&auto=format"
+    UX_GLASSES_12 = "https://images.unsplash.com/photo-1619449284321-09a3d58bd8d5?w=800&q=80&auto=format"
+
     glasses = [
-        
-        {"id":"1","name":"Classic Oval A123","brand":"VisionPlus","style":"Clásico","material":"Acetato","category":"Diario","gender":"Unisex","compatibility":94,"compatible_faces":["Ovalado","Triangular"],"description":"Armazón clásico de acetato con líneas suaves y elegantes.","image":"https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","images":["https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","https://images.unsplash.com/photo-1755519024827-fd05075a7200?w=600","https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600"],"tags":["Clásico","Acetato"],"model_3d":"LentesPrueba1"},
-        {"id":"2","name":"Modern Square B456","brand":"OptiFrame","style":"Moderno","material":"Metal","category":"Profesional","gender":"Hombre","compatibility":88,"compatible_faces":["Ovalado","Redondo"],"description":"Diseño moderno con líneas cuadradas definidas en metal ligero.","image":"https://images.unsplash.com/photo-1755519024827-fd05075a7200?w=600","images":["https://images.unsplash.com/photo-1755519024827-fd05075a7200?w=600","https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","https://images.unsplash.com/photo-1750557616137-4850b57bd4e9?w=600"],"tags":["Moderno","Metal"],"model_3d":"LentesPrueba1"},
-        {"id":"3","name":"Cat Eye Luxe C789","brand":"FemmeVision","style":"Elegante","material":"Acetato","category":"Moda","gender":"Mujer","compatibility":91,"compatible_faces":["Ovalado","Cuadrado"],"description":"Sofisticado armazón cat-eye en acetato premium.","image":"https://images.unsplash.com/photo-1749032717561-007aa5cdebcf?w=600","images":["https://images.unsplash.com/photo-1749032717561-007aa5cdebcf?w=600","https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600","https://images.unsplash.com/photo-1768297087105-7514e844565f?w=600"],"tags":["Cat-eye","Acetato"],"model_3d":"LentesPrueba1"},
-        {"id":"4","name":"Aviador Pro D012","brand":"SkyLens","style":"Clásico","material":"Metal","category":"Diario","gender":"Unisex","compatibility":85,"compatible_faces":["Cuadrado","Corazón"],"description":"El clásico estilo aviador rediseñado con materiales modernos.","image":"https://images.unsplash.com/photo-1755869985928-0e61815beddb?w=600","images":["https://images.unsplash.com/photo-1755869985928-0e61815beddb?w=600","https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","https://images.unsplash.com/photo-1750557616137-4850b57bd4e9?w=600"],"tags":["Aviador","Metal"],"model_3d":"LentesPrueba1"},
-        {"id":"5","name":"Round Retro E345","brand":"RetroSpec","style":"Retro","material":"Acetato","category":"Moda","gender":"Unisex","compatibility":78,"compatible_faces":["Cuadrado","Triangular"],"description":"Inspiración vintage con forma perfectamente redonda.","image":"https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600","images":["https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600","https://images.unsplash.com/photo-1759910546804-68fd991aceac?w=600","https://images.unsplash.com/photo-1749032717561-007aa5cdebcf?w=600"],"tags":["Redondo","Acetato"],"model_3d":"LentesPrueba1"},
-        {"id":"6","name":"Titanium Air F678","brand":"LightFrame","style":"Moderno","material":"Titanio","category":"Profesional","gender":"Hombre","compatibility":90,"compatible_faces":["Ovalado","Corazón","Redondo"],"description":"Ultraligero y resistente, diseñado para quienes buscan comodidad sin sacrificar estilo.","image":"https://images.unsplash.com/photo-1750557616137-4850b57bd4e9?w=600","images":["https://images.unsplash.com/photo-1750557616137-4850b57bd4e9?w=600","https://images.unsplash.com/photo-1755519024827-fd05075a7200?w=600","https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600"],"tags":["Moderno","Titanio"],"model_3d":"LentesPrueba1"},
-        {"id":"7","name":"Browline Vintage G901","brand":"HeritageLens","style":"Retro","material":"Mixto","category":"Diario","gender":"Unisex","compatibility":72,"compatible_faces":["Cuadrado","Ovalado"],"description":"Fusión de materiales con frente de acetato y varillas metálicas.","image":"https://images.unsplash.com/photo-1759910546804-68fd991aceac?w=600","images":["https://images.unsplash.com/photo-1759910546804-68fd991aceac?w=600","https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600","https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600"],"tags":["Retro","Mixto"],"model_3d":"LentesPrueba1"},
-        {"id":"8","name":"Elegance Frame H234","brand":"LuxeOptic","style":"Elegante","material":"Metal","category":"Moda","gender":"Mujer","compatibility":86,"compatible_faces":["Redondo","Corazón"],"description":"Marco metálico delicado con detalles refinados.","image":"https://images.unsplash.com/photo-1768297087105-7514e844565f?w=600","images":["https://images.unsplash.com/photo-1768297087105-7514e844565f?w=600","https://images.unsplash.com/photo-1749032717561-007aa5cdebcf?w=600","https://images.unsplash.com/photo-1755869985928-0e61815beddb?w=600"],"tags":["Elegante","Metal"],"model_3d":"LentesPrueba1"},
-        {"id":"9","name":"Sport Active I567","brand":"FlexView","style":"Deportivo","material":"Mixto","category":"Deportivo","gender":"Unisex","compatibility":65,"compatible_faces":["Ovalado","Cuadrado","Triangular"],"description":"Diseñado para la vida activa con materiales flexibles.","image":"https://images.unsplash.com/photo-1752486268262-6ce6b339a8de?w=600","images":["https://images.unsplash.com/photo-1752486268262-6ce6b339a8de?w=600","https://images.unsplash.com/photo-1750557616137-4850b57bd4e9?w=600","https://images.unsplash.com/photo-1755519024827-fd05075a7200?w=600"],"tags":["Deportivo","Mixto"],"model_3d":"LentesPrueba1"},
-        {"id":"10","name":"Rimless Pure J890","brand":"ClearSight","style":"Moderno","material":"Titanio","category":"Profesional","gender":"Unisex","compatibility":82,"compatible_faces":["Ovalado","Corazón"],"description":"Sin montura para quienes prefieren discreción.","image":"https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","images":["https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","https://images.unsplash.com/photo-1750557616137-4850b57bd4e9?w=600","https://images.unsplash.com/photo-1755869985928-0e61815beddb?w=600"],"tags":["Sin montura","Titanio"],"model_3d":"LentesPrueba1"},
-        {"id":"11","name":"Bold Acetate K123","brand":"UrbanFrame","style":"Moderno","material":"Acetato","category":"Diario","gender":"Hombre","compatibility":76,"compatible_faces":["Redondo","Triangular"],"description":"Acetato grueso con colores vibrantes y presencia audaz.","image":"https://images.unsplash.com/photo-1759910546804-68fd991aceac?w=600","images":["https://images.unsplash.com/photo-1759910546804-68fd991aceac?w=600","https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600","https://images.unsplash.com/photo-1768297087105-7514e844565f?w=600"],"tags":["Cuadrado","Acetato"],"model_3d":"LentesPrueba1"},
-        {"id":"12","name":"Classic Metal L456","brand":"VisionPlus","style":"Clásico","material":"Metal","category":"Profesional","gender":"Unisex","compatibility":89,"compatible_faces":["Ovalado","Cuadrado","Redondo"],"description":"Diseño clásico de metal que equilibra forma y función.","image":"https://images.unsplash.com/photo-1755869985928-0e61815beddb?w=600","images":["https://images.unsplash.com/photo-1755869985928-0e61815beddb?w=600","https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","https://images.unsplash.com/photo-1752486268262-6ce6b339a8de?w=600"],"tags":["Clásico","Metal"],"model_3d":"LentesPrueba1"},
-        {"id":"13","name":"Lentes Prueba 1","brand":"Prueba3D","style":"Moderno","material":"Acetato","category":"Diario","gender":"Unisex","compatibility":90,"compatible_faces":["Ovalado","Redondo","Cuadrado","Corazón"],"description":"Primer modelo 3D real integrado al sistema de prueba virtual con renderizado Three.js.","image":"https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600","images":["https://images.unsplash.com/photo-1577400983943-874919eca6ce?w=600","https://images.unsplash.com/photo-1766998224439-9f048ed4d687?w=600","https://images.unsplash.com/photo-1755519024827-fd05075a7200?w=600"],"tags":["3D","Moderno"],"model_3d":"LentesPrueba1"},
-        {"id":"14","name":"Lentes Aviador","brand":"Sungait","style":"Moderno","material":"Metal","category":"Diario","gender":"Unisex","compatibility":80,"compatible_faces":["Redondo","Ovalado","Triangular"],"description":"Estilo clásico de todo combinado: anteojos de sol cuadradas clásicas nunca pasan de moda, adecuadas para la mayoría de las caras de los hombres.","image":"/static/images/LentesAviador01.jpg","images":["/static/images/LentesAviador01.jpg","/static/images/LentesAviador02.jpg","/static/images/LentesAviador03.jpg","/static/images/LentesAviador04.jpg"],"tags":["Metal","Moderno"],"model_3d":"LentesAviador"},
+        {
+            "id": "1", "name": "Classic Oval A123", "brand": "VisionPlus",
+            "style": "Clásico", "material": "Acetato", "category": "Diario", "gender": "Unisex",
+            "compatibility": 94, "compatible_faces": ["Ovalado", "Triangular"],
+            "description": "Armazón clásico de acetato con líneas suaves y elegantes.",
+            "image": UX_GLASSES_01, "image_hover": UX_GLASSES_02,
+            "images": [UX_GLASSES_01, UX_GLASSES_02, UX_GLASSES_03],
+            "tags": ["Clásico", "Acetato"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "2", "name": "Modern Square B456", "brand": "OptiFrame",
+            "style": "Moderno", "material": "Metal", "category": "Profesional", "gender": "Hombre",
+            "compatibility": 88, "compatible_faces": ["Ovalado", "Redondo"],
+            "description": "Diseño moderno con líneas cuadradas definidas en metal ligero.",
+            "image": UX_GLASSES_02, "image_hover": UX_GLASSES_05,
+            "images": [UX_GLASSES_02, UX_GLASSES_05, UX_GLASSES_01],
+            "tags": ["Moderno", "Metal"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "3", "name": "Cat Eye Luxe C789", "brand": "FemmeVision",
+            "style": "Elegante", "material": "Acetato", "category": "Moda", "gender": "Mujer",
+            "compatibility": 91, "compatible_faces": ["Ovalado", "Cuadrado"],
+            "description": "Sofisticado armazón cat-eye en acetato premium.",
+            "image": UX_GLASSES_03, "image_hover": UX_GLASSES_07,
+            "images": [UX_GLASSES_03, UX_GLASSES_07, UX_GLASSES_08],
+            "tags": ["Cat-eye", "Acetato"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "4", "name": "Aviador Pro D012", "brand": "SkyLens",
+            "style": "Clásico", "material": "Metal", "category": "Diario", "gender": "Unisex",
+            "compatibility": 85, "compatible_faces": ["Cuadrado", "Corazón"],
+            "description": "El clásico estilo aviador rediseñado con materiales modernos.",
+            "image": IMG_AVIADOR_1, "image_hover": IMG_AVIADOR_2,
+            "images": [IMG_AVIADOR_1, IMG_AVIADOR_2, IMG_AVIADOR_3, IMG_AVIADOR_4],
+            "tags": ["Aviador", "Metal"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "5", "name": "Round Retro E345", "brand": "RetroSpec",
+            "style": "Retro", "material": "Acetato", "category": "Moda", "gender": "Unisex",
+            "compatibility": 78, "compatible_faces": ["Cuadrado", "Triangular"],
+            "description": "Inspiración vintage con forma perfectamente redonda.",
+            "image": UX_GLASSES_09, "image_hover": UX_GLASSES_11,
+            "images": [UX_GLASSES_09, UX_GLASSES_11, UX_GLASSES_06],
+            "tags": ["Redondo", "Acetato"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "6", "name": "Titanium Air F678", "brand": "LightFrame",
+            "style": "Moderno", "material": "Titanio", "category": "Profesional", "gender": "Hombre",
+            "compatibility": 90, "compatible_faces": ["Ovalado", "Corazón", "Redondo"],
+            "description": "Ultraligero y resistente, diseñado para quienes buscan comodidad sin sacrificar estilo.",
+            "image": UX_GLASSES_04, "image_hover": UX_GLASSES_12,
+            "images": [UX_GLASSES_04, UX_GLASSES_12, UX_GLASSES_02],
+            "tags": ["Moderno", "Titanio"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "7", "name": "Browline Vintage G901", "brand": "HeritageLens",
+            "style": "Retro", "material": "Mixto", "category": "Diario", "gender": "Unisex",
+            "compatibility": 72, "compatible_faces": ["Cuadrado", "Ovalado"],
+            "description": "Fusión de materiales con frente de acetato y varillas metálicas.",
+            "image": UX_GLASSES_06, "image_hover": UX_GLASSES_09,
+            "images": [UX_GLASSES_06, UX_GLASSES_09, UX_GLASSES_05],
+            "tags": ["Retro", "Mixto"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "8", "name": "Elegance Frame H234", "brand": "LuxeOptic",
+            "style": "Elegante", "material": "Metal", "category": "Moda", "gender": "Mujer",
+            "compatibility": 86, "compatible_faces": ["Redondo", "Corazón"],
+            "description": "Marco metálico delicado con detalles refinados.",
+            "image": UX_GLASSES_07, "image_hover": UX_GLASSES_03,
+            "images": [UX_GLASSES_07, UX_GLASSES_03, UX_GLASSES_08],
+            "tags": ["Elegante", "Metal"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "9", "name": "Sport Active I567", "brand": "FlexView",
+            "style": "Deportivo", "material": "Mixto", "category": "Deportivo", "gender": "Unisex",
+            "compatibility": 65, "compatible_faces": ["Ovalado", "Cuadrado", "Triangular"],
+            "description": "Diseñado para la vida activa con materiales flexibles.",
+            "image": UX_GLASSES_10, "image_hover": UX_GLASSES_04,
+            "images": [UX_GLASSES_10, UX_GLASSES_04, UX_GLASSES_12],
+            "tags": ["Deportivo", "Mixto"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "10", "name": "Rimless Pure J890", "brand": "ClearSight",
+            "style": "Moderno", "material": "Titanio", "category": "Profesional", "gender": "Unisex",
+            "compatibility": 82, "compatible_faces": ["Ovalado", "Corazón"],
+            "description": "Sin montura para quienes prefieren discreción.",
+            "image": UX_GLASSES_12, "image_hover": UX_GLASSES_04,
+            "images": [UX_GLASSES_12, UX_GLASSES_04, UX_GLASSES_02],
+            "tags": ["Sin montura", "Titanio"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "11", "name": "Bold Acetate K123", "brand": "UrbanFrame",
+            "style": "Moderno", "material": "Acetato", "category": "Diario", "gender": "Hombre",
+            "compatibility": 76, "compatible_faces": ["Redondo", "Triangular"],
+            "description": "Acetato grueso con colores vibrantes y presencia audaz.",
+            "image": UX_GLASSES_05, "image_hover": UX_GLASSES_10,
+            "images": [UX_GLASSES_05, UX_GLASSES_10, UX_GLASSES_02],
+            "tags": ["Cuadrado", "Acetato"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "12", "name": "Classic Metal L456", "brand": "VisionPlus",
+            "style": "Clásico", "material": "Metal", "category": "Profesional", "gender": "Unisex",
+            "compatibility": 89, "compatible_faces": ["Ovalado", "Cuadrado", "Redondo"],
+            "description": "Diseño clásico de metal que equilibra forma y función.",
+            "image": UX_GLASSES_11, "image_hover": UX_GLASSES_09,
+            "images": [UX_GLASSES_11, UX_GLASSES_09, UX_GLASSES_01],
+            "tags": ["Clásico", "Metal"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "13", "name": "Lentes Prueba 1", "brand": "Prueba3D",
+            "style": "Moderno", "material": "Acetato", "category": "Diario", "gender": "Unisex",
+            "compatibility": 90, "compatible_faces": ["Ovalado", "Redondo", "Cuadrado", "Corazón"],
+            "description": "Primer modelo 3D real integrado al sistema de prueba virtual con renderizado Three.js.",
+            "image": UX_GLASSES_08, "image_hover": UX_GLASSES_01,
+            "images": [UX_GLASSES_08, UX_GLASSES_01, UX_GLASSES_03],
+            "tags": ["3D", "Moderno"], "model_3d": "LentesPrueba1"
+        },
+        {
+            "id": "14", "name": "Lentes Aviador", "brand": "Sungait",
+            "style": "Moderno", "material": "Metal", "category": "Diario", "gender": "Unisex",
+            "compatibility": 80, "compatible_faces": ["Redondo", "Ovalado", "Triangular"],
+            "description": "Estilo clásico combinado: gafas cuadradas clásicas nunca pasan de moda, adecuadas para la mayoría de las caras.",
+            "image": IMG_AVIADOR_1, "image_hover": IMG_AVIADOR_2,
+            "images": [IMG_AVIADOR_1, IMG_AVIADOR_2, IMG_AVIADOR_3, IMG_AVIADOR_4],
+            "tags": ["Metal", "Moderno"], "model_3d": "LentesAviador"
+        },
     ]
 
     for g in glasses:
         cursor.execute("""
             INSERT INTO glasses (id, name, brand, style, material, category, gender,
-                                 compatibility, compatible_faces, description, image,
+                                 compatibility, compatible_faces, description, image, image_hover,
                                  images, tags, model_3d)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             g["id"], g["name"], g["brand"], g["style"], g["material"],
             g["category"], g["gender"], g["compatibility"],
             json.dumps(g["compatible_faces"]),
-            g["description"], g["image"],
+            g["description"], g["image"], g["image_hover"],
             json.dumps(g["images"]),
             json.dumps(g["tags"]),
             g.get("model_3d", "")
@@ -136,11 +279,13 @@ def get_all_glasses():
     conn.close()
     return [_row_to_dict(r) for r in rows]
 
+
 def get_glass_by_id(glass_id: str):
     conn = get_connection()
     row = conn.execute("SELECT * FROM glasses WHERE id = ?", (glass_id,)).fetchone()
     conn.close()
     return _row_to_dict(row) if row else None
+
 
 def get_glasses_by_face_shape(face_shape: str):
     conn = get_connection()
@@ -149,16 +294,19 @@ def get_glasses_by_face_shape(face_shape: str):
     conn.close()
     return [_row_to_dict(r) for r in rows]
 
+
 def get_all_face_shapes():
     conn = get_connection()
     rows = conn.execute("SELECT * FROM face_shapes").fetchall()
     conn.close()
     return [_row_to_dict(r) for r in rows]
 
+
 def get_face_shape_by_name(name: str):
     conn = get_connection()
     row = conn.execute("SELECT * FROM face_shapes WHERE name = ?", (name,)).fetchone()
     conn.close()
     return _row_to_dict(row) if row else None
+
 
 init_db()

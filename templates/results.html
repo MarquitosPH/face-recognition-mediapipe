@@ -1,107 +1,178 @@
 {% extends "base.html" %}
-{% block title %}Resultados | LensMatch{% endblock %}
-{% block content %}
-<div class="results-layout">
-    <!-- Sidebar filters -->
-    <aside class="results-sidebar">
-        <h3>Filtros</h3>
-        <div class="filter-group">
-            <div class="filter-label">Estilo</div>
-            <div class="filter-options">
-                <span class="filter-chip active" onclick="filterBy('style','all',this)">Todos</span>
-                <span class="filter-chip" onclick="filterBy('style','Clásico',this)">Clásico</span>
-                <span class="filter-chip" onclick="filterBy('style','Moderno',this)">Moderno</span>
-                <span class="filter-chip" onclick="filterBy('style','Retro',this)">Retro</span>
-                <span class="filter-chip" onclick="filterBy('style','Elegante',this)">Elegante</span>
-                <span class="filter-chip" onclick="filterBy('style','Deportivo',this)">Deportivo</span>
-            </div>
-        </div>
-        <div class="filter-group">
-            <div class="filter-label">Material</div>
-            <div class="filter-options">
-                <span class="filter-chip active" onclick="filterBy('material','all',this)">Todos</span>
-                <span class="filter-chip" onclick="filterBy('material','Acetato',this)">Acetato</span>
-                <span class="filter-chip" onclick="filterBy('material','Metal',this)">Metal</span>
-                <span class="filter-chip" onclick="filterBy('material','Titanio',this)">Titanio</span>
-                <span class="filter-chip" onclick="filterBy('material','Mixto',this)">Mixto</span>
-            </div>
-        </div>
-        <div class="filter-group">
-            <div class="filter-label">Género</div>
-            <div class="filter-options">
-                <span class="filter-chip active" onclick="filterBy('gender','all',this)">Todos</span>
-                <span class="filter-chip" onclick="filterBy('gender','Unisex',this)">Unisex</span>
-                <span class="filter-chip" onclick="filterBy('gender','Hombre',this)">Hombre</span>
-                <span class="filter-chip" onclick="filterBy('gender','Mujer',this)">Mujer</span>
-            </div>
-        </div>
-        <div id="faceShapeInfo" style="display:none;margin-top:16px;padding:14px;background:var(--green-light);border-radius:var(--radius-sm);">
-            <div style="font-size:0.78rem;font-weight:600;color:var(--green);margin-bottom:4px;">Tu rostro detectado</div>
-            <div style="font-size:1rem;font-weight:700;" id="faceShapeLabel">—</div>
-        </div>
-    </aside>
+{% block title %}Resultados | LensMatch {% endblock %}
 
-    <!-- Results grid -->
-    <div>
-        <div class="section-header" style="text-align:left;margin-bottom:24px;">
-            <h2>Lentes Recomendados</h2>
-            <p id="resultsCount">{{ glasses|length }} modelos disponibles</p>
+{% block content %}
+<link rel="stylesheet" href="/static/css/results.css">
+<!-- HERO -->
+<section class="results-hero">
+    <div class="results-hero-bg"></div>
+    <div class="results-hero-overlay"></div>
+    <div class="results-hero-content">
+        <span class="results-eyebrow">Análisis completado</span>
+        <h1 class="results-title">Tus <em>recomendaciones</em></h1>
+        <p class="results-subtitle">Armazones seleccionados por compatibilidad con tu tipo de rostro. Explora, filtra y encuentra el que más te favorezca.</p>
+    </div>
+</section>
+
+<!-- BANNER DE ROSTRO DETECTADO CON FOTO -->
+<div class="face-context-banner" id="faceBanner" style="display:none;">
+    <div class="face-badge">
+        <div class="face-badge-bg"></div>
+        <div class="face-badge-overlay"></div>
+        <div class="face-badge-icon"><i data-lucide="scan-face"></i></div>
+        <div class="face-badge-text">
+            <p class="face-badge-label">Tu rostro detectado</p>
+            <p class="face-badge-value">Forma <em id="faceShapeLabel">—</em></p>
         </div>
-        <div class="results-grid" id="glassesGrid">
-            {% for g in glasses %}
-            <a href="/detalle/{{ g.id }}" class="glass-card"
-               data-style="{{ g.style }}" data-material="{{ g.material }}" data-gender="{{ g.gender }}">
-                <img src="{{ g.image }}" alt="{{ g.name }}" class="glass-card-img" loading="lazy">
-                <div class="glass-card-body">
-                    <h4>{{ g.name }}</h4>
-                    <div class="glass-card-brand">{{ g.brand }}</div>
-                    <div class="glass-card-tags">
-                        {% for tag in g.tags %}
-                        <span class="badge badge-blue">{{ tag }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="glass-card-footer">
-                        <div>
-                            <div class="compatibility-bar"><div class="compatibility-fill" style="width:{{ g.compatibility }}%"></div></div>
-                        </div>
-                        <span class="compatibility-text">{{ g.compatibility }}% compatible</span>
-                    </div>
-                </div>
-            </a>
-            {% endfor %}
-        </div>
+        <a href="/analisis" class="face-badge-change">
+            <i data-lucide="refresh-cw"></i>
+            <span>Volver a analizar</span>
+        </a>
     </div>
 </div>
 
-<script>
-let activeFilters = { style: 'all', material: 'all', gender: 'all' };
+<!-- LAYOUT SIDEBAR + GRID -->
+<div class="results-layout">
 
-function filterBy(type, value, el) {
-    activeFilters[type] = value;
-    el.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    applyFilters();
-}
+    <aside class="results-sidebar" id="sidebarFilters">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">Filtros</h3>
+            <button class="clear-btn" id="clearBtn" onclick="clearAllFilters()">
+                <i data-lucide="x"></i>
+                <span>Limpiar</span>
+            </button>
+        </div>
 
-function applyFilters() {
-    const cards = document.querySelectorAll('.glass-card');
-    let visible = 0;
-    cards.forEach(card => {
-        let show = true;
-        if (activeFilters.style !== 'all' && card.dataset.style !== activeFilters.style) show = false;
-        if (activeFilters.material !== 'all' && card.dataset.material !== activeFilters.material) show = false;
-        if (activeFilters.gender !== 'all' && card.dataset.gender !== activeFilters.gender) show = false;
-        card.style.display = show ? '' : 'none';
-        if (show) visible++;
-    });
-    document.getElementById('resultsCount').textContent = `${visible} modelos encontrados`;
-}
+        <div class="filter-group">
+            <div class="filter-group-header">
+                <span class="filter-group-icon"><i data-lucide="shapes"></i></span>
+                <p class="filter-group-label">Estilo</p>
+            </div>
+            <div class="filter-options">
+                <button class="filter-chip active" onclick="filterBy('style','all',this)"><span>Todos</span></button>
+                <button class="filter-chip" onclick="filterBy('style','Clásico',this)"><span>Clásico</span></button>
+                <button class="filter-chip" onclick="filterBy('style','Moderno',this)"><span>Moderno</span></button>
+                <button class="filter-chip" onclick="filterBy('style','Retro',this)"><span>Retro</span></button>
+                <button class="filter-chip" onclick="filterBy('style','Elegante',this)"><span>Elegante</span></button>
+                <button class="filter-chip" onclick="filterBy('style','Deportivo',this)"><span>Deportivo</span></button>
+            </div>
+        </div>
 
-// Show detected face shape if available
-const savedShape = localStorage.getItem('lm_face_shape');
-if (savedShape) {
-    document.getElementById('faceShapeInfo').style.display = 'block';
-    document.getElementById('faceShapeLabel').textContent = savedShape;
-}
-</script>
+        <div class="filter-group">
+            <div class="filter-group-header">
+                <span class="filter-group-icon"><i data-lucide="layers"></i></span>
+                <p class="filter-group-label">Material</p>
+            </div>
+            <div class="filter-options">
+                <button class="filter-chip active" onclick="filterBy('material','all',this)"><span>Todos</span></button>
+                <button class="filter-chip" onclick="filterBy('material','Acetato',this)"><span>Acetato</span></button>
+                <button class="filter-chip" onclick="filterBy('material','Metal',this)"><span>Metal</span></button>
+                <button class="filter-chip" onclick="filterBy('material','Titanio',this)"><span>Titanio</span></button>
+                <button class="filter-chip" onclick="filterBy('material','Mixto',this)"><span>Mixto</span></button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <div class="filter-group-header">
+                <span class="filter-group-icon"><i data-lucide="users"></i></span>
+                <p class="filter-group-label">Género</p>
+            </div>
+            <div class="filter-options">
+                <button class="filter-chip active" onclick="filterBy('gender','all',this)"><span>Todos</span></button>
+                <button class="filter-chip" onclick="filterBy('gender','Unisex',this)"><span>Unisex</span></button>
+                <button class="filter-chip" onclick="filterBy('gender','Hombre',this)"><span>Hombre</span></button>
+                <button class="filter-chip" onclick="filterBy('gender','Mujer',this)"><span>Mujer</span></button>
+            </div>
+        </div>
+    </aside>
+
+    <div>
+        <div class="results-header">
+            <div class="results-info">
+                <h2 class="results-info-title">Lentes recomendados</h2>
+                <span class="results-info-count"><strong id="resultsCount">{{ glasses|length }}</strong> modelos</span>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center;">
+                <button class="mobile-filter-toggle" onclick="toggleMobileFilters()">
+                    <i data-lucide="sliders-horizontal"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <div class="sort-select-wrap">
+                    <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+                        <option value="default">Mayor compatibilidad</option>
+                        <option value="name-asc">Nombre A-Z</option>
+                        <option value="name-desc">Nombre Z-A</option>
+                    </select>
+                    <i data-lucide="chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="products-grid" id="glassesGrid">
+            {% for g in glasses %}
+            {% set has_hover = g.image_hover and g.image_hover != g.image %}
+
+            <a href="/detalle/{{ g.id }}" class="product-card{% if not has_hover %} single-img{% endif %}"
+               data-style="{{ g.style }}"
+               data-material="{{ g.material }}"
+               data-gender="{{ g.gender }}"
+               data-name="{{ g.name|lower }}"
+               data-compat="{{ g.compatibility }}">
+
+                <div class="product-image-wrap{% if not g.image %} no-image{% endif %}">
+
+                    {% if g.compatibility >= 85 %}
+                    <span class="match-badge">
+                        <span class="match-badge-icon"><i data-lucide="star"></i></span>
+                        <span>Top Match</span>
+                    </span>
+                    {% endif %}
+
+                    <button class="product-fav" onclick="event.preventDefault();event.stopPropagation();toggleFav(this);" aria-label="Guardar en favoritos">
+                        <i data-lucide="heart"></i>
+                    </button>
+
+                    {% if g.image %}
+                    <img src="{{ g.image }}" alt="{{ g.name }}" class="product-image" loading="lazy"
+                         onerror="this.style.visibility='hidden'">
+                    {% if has_hover %}
+                    <img src="{{ g.image_hover }}" alt="" class="product-image-alt" loading="lazy"
+                         onerror="this.style.visibility='hidden'">
+                    {% endif %}
+                    {% else %}
+                    <span class="no-img-icon"><i data-lucide="image-off"></i></span>
+                    {% endif %}
+
+                    {% if has_hover %}
+                    <div class="product-dots">
+                        <span class="product-dot"></span>
+                        <span class="product-dot"></span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="product-info">
+                    <h3 class="product-name">{{ g.name }}</h3>
+                    <div class="product-brand">{{ g.brand }} · {{ g.style }}</div>
+                    <div class="product-compat-bar">
+                        <div class="product-compat-fill {% if g.compatibility < 60 %}low{% elif g.compatibility < 85 %}medium{% endif %}"
+                             style="width:{{ g.compatibility }}%"></div>
+                    </div>
+                    <span class="product-compat-text">{{ g.compatibility }}% compatible</span>
+                </div>
+            </a>
+            {% endfor %}
+
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <div class="empty-state-icon"><i data-lucide="search-x"></i></div>
+                <h3 class="empty-state-title">No encontramos coincidencias</h3>
+                <p class="empty-state-text">Ajusta los filtros para ver más opciones o vuelve a empezar.</p>
+                <button class="empty-state-btn" onclick="clearAllFilters()">Limpiar filtros</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/results.js"></script>
 {% endblock %}

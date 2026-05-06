@@ -1,0 +1,600 @@
+/* ============================================
+       ICONOS LUCIDE
+       ============================================ */
+    .breadcrumb svg { width: 14px; height: 14px; stroke-width: 2; }
+    .spec-item svg { width: 18px; height: 18px; stroke-width: 1.75; color: #475569; }
+    .benefit-item svg { width: 20px; height: 20px; stroke-width: 1.75; color: #0f172a; }
+    .floating-fav svg { width: 22px; height: 22px; stroke-width: 1.75; }
+    .stage-arrow svg { width: 22px; height: 22px; stroke-width: 2; }
+    .cta-primary svg { width: 18px; height: 18px; stroke-width: 2; }
+    .cta-secondary svg { width: 16px; height: 16px; stroke-width: 2; }
+    .face-match-icon svg { width: 20px; height: 20px; stroke-width: 1.75; color: #ffffff; }
+    .tab-icon svg { width: 16px; height: 16px; stroke-width: 2; }
+    .stage-tryon-icon svg { width: 18px; height: 18px; stroke-width: 2; }
+
+    /* ============================================
+       BREADCRUMB (sutil arriba)
+       ============================================ */
+    .breadcrumb-bar {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 24px 32px 0;
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: #94a3b8;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-style: italic;
+    }
+
+    .breadcrumb a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .breadcrumb a:hover { color: #0f172a; }
+
+    .breadcrumb .current {
+        color: #0f172a;
+        font-weight: 500;
+    }
+
+    /* ============================================
+       STAGE EDITORIAL (split-screen Mykita)
+       ============================================ */
+    .stage-section {
+        position: relative;
+        max-width: 1600px;
+        margin: 24px auto 0;
+        padding: 0 32px;
+    }
+
+    .stage-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        background: #fafaf8;
+        position: relative;
+        min-height: 70vh;
+        max-height: 800px;
+    }
+
+    /* Panel izquierdo: imagen lifestyle (modelo) */
+    .stage-lifestyle {
+        position: relative;
+        background: #e8e6df;
+        overflow: hidden;
+    }
+
+    .stage-lifestyle img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+
+    .stage-lifestyle img.active {
+        opacity: 1;
+    }
+
+    /* Botón "Probar virtualmente" flotante (esquina superior izq, estilo Mykita "Try on") */
+    .stage-tryon {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        z-index: 5;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(8px);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.25s ease;
+    }
+
+    .stage-tryon:hover {
+        background: #ffffff;
+        color: #0f172a;
+        transform: translateY(-2px);
+    }
+
+    /* Panel derecho: producto solo */
+    .stage-product {
+        position: relative;
+        background: #fafaf8;
+        overflow: hidden;
+    }
+
+    .stage-product img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 12%;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+
+    .stage-product img.active {
+        opacity: 1;
+    }
+
+    /* Flechas de navegación inferiores */
+    .stage-controls {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 5;
+    }
+
+    .stage-arrow {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(6px);
+        border: none;
+        color: #0f172a;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        padding: 0;
+    }
+
+    .stage-arrow:hover {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .stage-dots {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .stage-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, 0.25);
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.2s ease;
+    }
+
+    .stage-dot.active {
+        background: #0f172a;
+        width: 22px;
+        border-radius: 3px;
+    }
+
+    /* Favorito flotante en esquina superior derecha */
+    .floating-fav {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        z-index: 5;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(6px);
+        border: none;
+        color: #0f172a;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+        padding: 0;
+    }
+
+    .floating-fav:hover {
+        background: #ffffff;
+        transform: scale(1.08);
+    }
+
+    .floating-fav.active { color: #dc2626; }
+    .floating-fav.active svg { fill: #dc2626; }
+
+    /* ============================================
+       INFO CARD FLOTANTE (estilo Mykita)
+       ============================================ */
+    .floating-info-card {
+        position: absolute;
+        bottom: 32px;
+        right: 32px;
+        max-width: 360px;
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 24px 26px;
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+        z-index: 4;
+    }
+
+    .info-brand {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin: 0 0 6px 0;
+    }
+
+    .info-name {
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin: 0 0 4px 0;
+    }
+
+    .info-name em {
+        font-style: italic;
+        font-weight: 400;
+        font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .info-tagline {
+        font-size: 0.88rem;
+        color: #64748b;
+        margin: 0 0 18px 0;
+        padding-bottom: 18px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Match indicator (solo si hay análisis previo) */
+    .match-pill {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border-radius: 999px;
+        margin-bottom: 14px;
+    }
+
+    .match-pill.visible { display: inline-flex; }
+
+    .match-pill-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e;
+    }
+
+    /* Botones */
+    .info-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 14px 20px;
+        background: #0f172a;
+        color: #ffffff;
+        border: none;
+        border-radius: 999px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        margin-bottom: 8px;
+    }
+
+    .info-cta:hover {
+        background: #1e293b;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.25);
+    }
+
+    .info-cta-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 12px 20px;
+        background: transparent;
+        color: #475569;
+        border: none;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .info-cta-secondary:hover {
+        color: #0f172a;
+    }
+
+    /* ============================================
+       SECCIÓN INFERIOR — "ACERCA DE [NOMBRE]"
+       ============================================ */
+    .about-section {
+        max-width: 1200px;
+        margin: 80px auto 0;
+        padding: 0 32px 80px;
+    }
+
+    .about-eyebrow {
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #64748b;
+        margin: 0 0 14px 0;
+    }
+
+    .about-title {
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        font-weight: 400;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-style: italic;
+        color: #0f172a;
+        margin: 0 0 40px 0;
+        letter-spacing: -0.01em;
+        line-height: 1.05;
+    }
+
+    /* ============================================
+       TABS
+       ============================================ */
+    .specs-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 36px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .specs-tabs::-webkit-scrollbar { display: none; }
+
+    .specs-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 22px;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: #64748b;
+        font-family: inherit;
+        font-size: 0.92rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: -1px;
+        white-space: nowrap;
+    }
+
+    .specs-tab:hover { color: #0f172a; }
+
+    .specs-tab.active {
+        color: #0f172a;
+        border-bottom-color: #0f172a;
+        font-weight: 700;
+    }
+
+    .specs-content {
+        display: none;
+    }
+
+    .specs-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* TAB descripción */
+    .long-description {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #334155;
+        max-width: 700px;
+        margin: 0;
+    }
+
+    /* TAB características */
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0 32px;
+    }
+
+    .spec-item {
+        display: flex;
+        gap: 14px;
+        padding: 22px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .spec-item svg { flex-shrink: 0; margin-top: 2px; }
+
+    .spec-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .spec-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin: 0 0 4px 0;
+    }
+
+    .spec-value {
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* TAB compatibilidad */
+    .faces-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .face-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 20px;
+        background: #f1f5f9;
+        border-radius: 999px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: #334155;
+    }
+
+    .face-chip.highlight {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .face-chip-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e;
+    }
+
+    /* Bloque de match contextual al inicio del tab compat */
+    .face-match-block {
+        display: none;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 22px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 14px;
+        margin-bottom: 24px;
+        color: #ffffff;
+        max-width: 500px;
+    }
+
+    .face-match-block.visible { display: flex; }
+
+    .face-match-icon {
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1.5px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .face-match-text p { margin: 0; }
+
+    .face-match-label {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 2px !important;
+    }
+
+    .face-match-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    /* Tags */
+    .info-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 24px;
+    }
+
+    .info-tag {
+        padding: 6px 14px;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 900px) {
+        .stage-section { padding: 0 16px; }
+        .stage-grid {
+            grid-template-columns: 1fr;
+            min-height: auto;
+            max-height: none;
+        }
+
+        .stage-lifestyle, .stage-product {
+            aspect-ratio: 4 / 5;
+        }
+
+        .floating-info-card {
+            position: static;
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 14px;
+        }
+
+        .stage-controls {
+            bottom: 16px;
+        }
+
+        .breadcrumb-bar { padding: 16px 16px 0; }
+        .about-section { padding: 0 16px 60px; margin-top: 50px; }
+    }
+
+    @media (max-width: 640px) {
+        .stage-tryon { top: 16px; left: 16px; padding: 8px 14px; font-size: 0.75rem; }
+        .floating-fav { top: 16px; right: 16px; width: 40px; height: 40px; }
+        .stage-arrow { width: 38px; height: 38px; }
+        .floating-info-card { padding: 20px 22px; }
+        .info-name { font-size: 1.4rem; }
+    }

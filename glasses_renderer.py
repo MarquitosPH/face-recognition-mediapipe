@@ -9,28 +9,76 @@ Flujo:
   4. Compone el resultado sobre el frame original
 
 Dependencias:
-  pip install pyrender trimesh numpy opencv-python mediapipe PyOpenGL
+  pip install pyrender trimesh numpy opencv-python mediapipe PyOpenGL PyOpenGL_accelerate
 
-Nota: pyrender necesita un backend OpenGL. En servidores sin pantalla:
-  pip install PyOpenGL-osmesa   (para OSMesa)
-  O configurar EGL si tienes GPU
+Backend OpenGL por plataforma:
+  Windows  → OpenGL nativo via GPU (NVIDIA/AMD). NO se setea PYOPENGL_PLATFORM.
+             Forzar EGL u OSMesa en Windows causa el error "cannot load osmesa/egl"
+             porque esos backends son exclusivos de Linux.
+             Requisito: drivers GPU actualizados (GeForce Experience o AMD Software).
+  Linux    → EGL (GPU offscreen) → OSMesa (CPU software fallback).
+  macOS    → OpenGL nativo (sin setear plataforma).
 """
 
 import os
+import sys
+import platform
 import numpy as np
 import trimesh
 import cv2
 import mediapipe as mp
 from typing import Optional, Dict, Tuple, List
 
-# Backend para renderizado offscreen (sin pantalla)
-# Intentar EGL primero (GPU), luego OSMesa (CPU)
-os.environ['PYOPENGL_PLATFORM'] = 'egl'
+# ── Selección de backend OpenGL según plataforma ─────────────────────────────
+#
+# PROBLEMA ORIGINAL: el código seteaba PYOPENGL_PLATFORM='egl' siempre,
+# pero EGL es exclusivo de Linux. En Windows esto hace que pyrender falle
+# silenciosamente y nunca use la GPU disponible.
+#
+# SOLUCIÓN:
+#   Windows  → NO setear la variable. pyrender usa WGL (OpenGL nativo de Windows).
+#   Linux    → EGL primero (GPU sin pantalla), OSMesa como fallback (CPU).
+#   macOS    → NO setear la variable. pyrender usa CGL (OpenGL nativo de macOS).
+# ─────────────────────────────────────────────────────────────────────────────
+
+_SYSTEM = platform.system()   # 'Windows' | 'Linux' | 'Darwin'
+
+if _SYSTEM == "Linux":
+    # En Linux sin display físico (servidor, contenedor) se necesita EGL o OSMesa.
+    # Setear solo si el usuario no lo definió ya en su entorno.
+    os.environ.setdefault("PYOPENGL_PLATFORM", "egl")
+
+# En Windows y macOS NO se toca PYOPENGL_PLATFORM: pyrender detecta el
+# contexto nativo automáticamente con PyOpenGL + PyOpenGL_accelerate.
+
 try:
     import pyrender
-except Exception:
-    os.environ['PYOPENGL_PLATFORM'] = 'osmesa'
-    import pyrender
+    _BACKEND = os.environ.get("PYOPENGL_PLATFORM", f"native-{_SYSTEM}")
+    print(f"[pyrender] OK — backend: {_BACKEND} | plataforma: {_SYSTEM}")
+
+except Exception as _egl_err:
+    if _SYSTEM == "Linux":
+        # EGL no disponible: intentar OSMesa (renderizado por software)
+        os.environ["PYOPENGL_PLATFORM"] = "osmesa"
+        try:
+            import pyrender
+            print("[pyrender] OK — backend: osmesa (software fallback)")
+        except Exception as _osmesa_err:
+            raise RuntimeError(
+                "[pyrender] No se pudo inicializar en Linux.\n"
+                f"  EGL error   : {_egl_err}\n"
+                f"  OSMesa error: {_osmesa_err}\n"
+                "  Instala: pip install PyOpenGL PyOpenGL_accelerate\n"
+                "  O para OSMesa: pip install PyOpenGL-osmesa"
+            ) from _osmesa_err
+    else:
+        # Windows / macOS: fallo inesperado
+        raise RuntimeError(
+            f"[pyrender] No se pudo inicializar en {_SYSTEM}.\n"
+            f"  Error: {_egl_err}\n"
+            "  Instala: pip install PyOpenGL PyOpenGL_accelerate\n"
+            "  Asegúrate de tener drivers GPU actualizados."
+        ) from _egl_err
 
 
 # ═══════════════════════════════════════════════════════════
