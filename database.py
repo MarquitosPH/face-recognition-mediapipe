@@ -96,31 +96,31 @@ def _seed_glasses(cursor):
 
     glasses = [
         {
-            "id": "1", "name": "Classic Oval A123", "brand": "VisionPlus",
+            "id": "1", "name": "Classic Oval A123", "brand": "VisionPlus",                   #Con este se cubre el triangular       
             "style": "Clásico", "material": "Acetato", "category": "Diario", "gender": "Unisex",
             "compatibility": 94, "compatible_faces": ["Ovalado", "Triangular"],
             "description": "Armazón clásico de acetato con líneas suaves y elegantes.",
             "image": UX_GLASSES_01, "image_hover": UX_GLASSES_02,
             "images": [UX_GLASSES_01, UX_GLASSES_02, UX_GLASSES_03],
-            "tags": ["Clásico", "Acetato"], "model_3d": "LentesPrueba1"
+            "tags": ["Clásico", "Acetato"], "model_3d": "Browline"
         },
         {
-            "id": "2", "name": "Modern Square B456", "brand": "OptiFrame",
+            "id": "2", "name": "Modern Square B456", "brand": "OptiFrame", #Con este se cubre el ovalado
             "style": "Moderno", "material": "Metal", "category": "Profesional", "gender": "Hombre",
             "compatibility": 88, "compatible_faces": ["Ovalado", "Redondo"],
             "description": "Diseño moderno con líneas cuadradas definidas en metal ligero.",
             "image": UX_GLASSES_02, "image_hover": UX_GLASSES_05,
             "images": [UX_GLASSES_02, UX_GLASSES_05, UX_GLASSES_01],
-            "tags": ["Moderno", "Metal"], "model_3d": "LentesPrueba1"
+            "tags": ["Moderno", "Metal"], "model_3d": "square2"
         },
         {
-            "id": "3", "name": "Cat Eye Luxe C789", "brand": "FemmeVision",
+            "id": "3", "name": "Cat Eye Luxe C789", "brand": "FemmeVision", #Con este se cubre el diamante
             "style": "Elegante", "material": "Acetato", "category": "Moda", "gender": "Mujer",
-            "compatibility": 91, "compatible_faces": ["Ovalado", "Cuadrado"],
+            "compatibility": 91, "compatible_faces": ["Diamante", "Cuadrado"],
             "description": "Sofisticado armazón cat-eye en acetato premium.",
             "image": UX_GLASSES_03, "image_hover": UX_GLASSES_07,
             "images": [UX_GLASSES_03, UX_GLASSES_07, UX_GLASSES_08],
-            "tags": ["Cat-eye", "Acetato"], "model_3d": "LentesPrueba1"
+            "tags": ["Cat-eye", "Acetato"], "model_3d": "CatEye"
         },
         {
             "id": "4", "name": "Aviador Pro D012", "brand": "SkyLens",
@@ -132,22 +132,22 @@ def _seed_glasses(cursor):
             "tags": ["Aviador", "Metal"], "model_3d": "LentesPrueba1"
         },
         {
-            "id": "5", "name": "Round Retro E345", "brand": "RetroSpec",
+            "id": "5", "name": "Round Retro E345", "brand": "RetroSpec", #con este se cubre el cuadrado
             "style": "Retro", "material": "Acetato", "category": "Moda", "gender": "Unisex",
             "compatibility": 78, "compatible_faces": ["Cuadrado", "Triangular"],
             "description": "Inspiración vintage con forma perfectamente redonda.",
             "image": UX_GLASSES_09, "image_hover": UX_GLASSES_11,
             "images": [UX_GLASSES_09, UX_GLASSES_11, UX_GLASSES_06],
-            "tags": ["Redondo", "Acetato"], "model_3d": "LentesPrueba1"
+            "tags": ["Redondo", "Acetato"], "model_3d": "redondos"
         },
         {
-            "id": "6", "name": "Titanium Air F678", "brand": "LightFrame",
+            "id": "6", "name": "Titanium Air F678", "brand": "LightFrame",   #con este se cubre el redondo
             "style": "Moderno", "material": "Titanio", "category": "Profesional", "gender": "Hombre",
             "compatibility": 90, "compatible_faces": ["Ovalado", "Corazón", "Redondo"],
             "description": "Ultraligero y resistente, diseñado para quienes buscan comodidad sin sacrificar estilo.",
             "image": UX_GLASSES_04, "image_hover": UX_GLASSES_12,
             "images": [UX_GLASSES_04, UX_GLASSES_12, UX_GLASSES_02],
-            "tags": ["Moderno", "Titanio"], "model_3d": "LentesPrueba1"
+            "tags": ["Moderno", "Titanio"], "model_3d": "square"
         },
         {
             "id": "7", "name": "Browline Vintage G901", "brand": "HeritageLens",
@@ -159,13 +159,13 @@ def _seed_glasses(cursor):
             "tags": ["Retro", "Mixto"], "model_3d": "LentesPrueba1"
         },
         {
-            "id": "8", "name": "Elegance Frame H234", "brand": "LuxeOptic",
+            "id": "8", "name": "Elegance Frame H234", "brand": "LuxeOptic",    #con esto se cumple el alargado/rectangular
             "style": "Elegante", "material": "Metal", "category": "Moda", "gender": "Mujer",
-            "compatibility": 86, "compatible_faces": ["Redondo", "Corazón"],
+            "compatibility": 86, "compatible_faces": ["Alargado","Redondo", "Corazón"],
             "description": "Marco metálico delicado con detalles refinados.",
             "image": UX_GLASSES_07, "image_hover": UX_GLASSES_03,
             "images": [UX_GLASSES_07, UX_GLASSES_03, UX_GLASSES_08],
-            "tags": ["Elegante", "Metal"], "model_3d": "LentesPrueba1"
+            "tags": ["Elegante", "Metal"], "model_3d": "GruesoDecorado"
         },
         {
             "id": "9", "name": "Sport Active I567", "brand": "FlexView",
@@ -213,9 +213,9 @@ def _seed_glasses(cursor):
             "tags": ["3D", "Moderno"], "model_3d": "LentesPrueba1"
         },
         {
-            "id": "14", "name": "Lentes Aviador", "brand": "Sungait",
+            "id": "14", "name": "Lentes Aviador", "brand": "Sungait",   #Con este se cubre el corazón
             "style": "Moderno", "material": "Metal", "category": "Diario", "gender": "Unisex",
-            "compatibility": 80, "compatible_faces": ["Redondo", "Ovalado", "Triangular"],
+            "compatibility": 80, "compatible_faces": ["Corazón", "Redondo", "Ovalado", "Triangular"],
             "description": "Estilo clásico combinado: gafas cuadradas clásicas nunca pasan de moda, adecuadas para la mayoría de las caras.",
             "image": IMG_AVIADOR_1, "image_hover": IMG_AVIADOR_2,
             "images": [IMG_AVIADOR_1, IMG_AVIADOR_2, IMG_AVIADOR_3, IMG_AVIADOR_4],
@@ -238,7 +238,6 @@ def _seed_glasses(cursor):
             json.dumps(g["tags"]),
             g.get("model_3d", "")
         ))
-
 
 def _seed_face_shapes(cursor):
     shapes = [
