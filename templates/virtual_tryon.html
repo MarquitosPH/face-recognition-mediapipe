@@ -122,10 +122,10 @@
         <a-entity mindar-face-target="anchorIndex: 168">
             <a-gltf-model
                 id="glassesEntity"
-                position="0 -0.02 0.05"
-                rotation="0 0 0"
-                scale="0.012 0.012 0.012"
-                src="#glassesModel"
+                position="{{ glass_config.position | default('0 -0.34 -0.33') }}"
+                rotation="{{ glass_config.rotation | default('0 0 0') }}"
+                scale="{{ glass_config.scale | default('0.064 0.064 0.064') }}"
+                src="/static/models/{{ glass.model_3d }}.glb"
             ></a-gltf-model>
         </a-entity>
     </a-scene>
@@ -213,7 +213,36 @@
     position: "0 0 0",
     rotation: "0 0 0",
     },
-        // NuevoModelo: { scale:"0.01 0.01 0.01", position:"0 0 0.05", rotation:"0 0 0" },
+    Browline: {
+    scale: "0.064 0.064 0.064",
+    position: "0 -0.34 -0.33",
+    rotation: "0 0 0",
+    },
+    CatEye: {
+    scale: "0.064 0.064 0.064",
+    position: "0 -0.34 -0.33",
+    rotation: "0 0 0",
+    },
+    GruesoDecorado: {
+    scale: "0.064 0.064 0.064",
+    position: "0 -0.34 -0.33",
+    rotation: "0 0 0",
+    },
+    redondos: {
+    scale: "0.064 0.064 0.064",
+    position: "0 -0.34 -0.33",
+    rotation: "0 0 0",
+    },
+    square: {
+    scale: "0.064 0.064 0.064",
+    position: "0 -0.34 -0.33",
+    rotation: "0 0 0",
+    },
+    square2: {
+    scale: "0.064 0.064 0.064",
+    position: "0 -0.34 -0.33",
+    rotation: "0 0 0",
+    },
     };
     const DEFAULT_CONFIG = { scale:"0.01 0.01 0.01", position:"0 0 0.05", rotation:"0 0 0" };
     function getConfig(n) { return GLASS_CONFIGS[n] || DEFAULT_CONFIG; }

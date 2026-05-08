@@ -96,7 +96,7 @@ def _seed_glasses(cursor):
 
     glasses = [
         {
-            "id": "1", "name": "Classic Oval A123", "brand": "VisionPlus",                   #Con este se cubre el triangular       
+            "id": "1", "name": "Classic Oval A123PRUEBA", "brand": "VisionPlus",                   #Con este se cubre el triangular       
             "style": "Clásico", "material": "Acetato", "category": "Diario", "gender": "Unisex",
             "compatibility": 94, "compatible_faces": ["Ovalado", "Triangular"],
             "description": "Armazón clásico de acetato con líneas suaves y elegantes.",

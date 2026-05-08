@@ -75,7 +75,7 @@ function toggleFav(btn) {
 // (Nielsen #10: ayuda contextual - solo si hay análisis previo)
 // ============================================
 const savedShape = localStorage.getItem('lm_face_shape');
-const compatibility = parseInt({{ glass.compatibility|default(0) }});
+const compatibility = parseInt(document.getElementById('glassCompatibility')?.dataset?.value || 0);
 
 if (savedShape) {
     // 1. Activar pill de match con la compatibilidad real
