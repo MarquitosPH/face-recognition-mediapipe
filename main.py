@@ -1,5 +1,5 @@
 """
-LensMatch — Sistema de Recomendación de Lentes basado en Reconocimiento Facial
+OptiMatch — Sistema de Recomendación de Lentes basado en Reconocimiento Facial
 FastAPI Backend + Jinja2 Templates + SQLite + OpenCV/MediaPipe
 """
 
@@ -15,7 +15,7 @@ from database import (
 )
 from face_analyzer import analyze_face_image
 
-app = FastAPI(title="LensMatch", version="3.0.0")
+app = FastAPI(title="OptiMatch", version="3.0.0")
 
 # --- Router de renderizado 3D server-side ---
 try:

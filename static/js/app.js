@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════
-   LensMatch — app.js  Shared JavaScript
+   OptiMatch — app.js  Shared JavaScript
    ════════════════════════════════════════════════ */
 
 const API = {

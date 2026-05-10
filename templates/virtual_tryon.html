@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Prueba Virtual — {{ glass.name }} | LensMatch</title>
+    <title>Prueba Virtual — {{ glass.name }} | OptiMatch</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
@@ -134,7 +134,7 @@
 
     <!-- Barra superior -->
     <div class="overlay-top">
-        <span class="overlay-logo">👓 LensMatch</span>
+        <span class="overlay-logo">👓 OptiMatch</span>
         <div style="display:flex;gap:8px;">
             <button onclick="captureSnapshot()">📸 Capturar</button>
             <a href="/detalle/{{ glass.id }}">← Volver</a>
@@ -197,7 +197,7 @@
 </div>
     <script>
     // ═══════════════════════════════════════════════════════
-    // LensMatch — MindAR Full-Screen + Head Occluder
+    // OptiMatch — MindAR Full-Screen + Head Occluder
     // ═══════════════════════════════════════════════════════
 
     let currentModelName = '{{ glass.model_3d }}';
@@ -296,7 +296,7 @@
         const s=document.getElementById('arScene');
         if(!s||!s.canvas){alert('Espera a que cargue');return;}
         const a=document.createElement('a');
-        a.download=`lensmatch-${Date.now()}.png`;
+        a.download=`OptiMatch-${Date.now()}.png`;
         a.href=s.canvas.toDataURL('image/png');
         a.click();
     }
@@ -305,7 +305,7 @@
         document.getElementById('sidebarPanel').classList.toggle('hidden');
     }
 
-    console.log('[LensMatch] MindAR Full-Screen — modelo:', currentModelName);
+    console.log('[OptiMatch] MindAR Full-Screen — modelo:', currentModelName);
 
     // Sobreescribir getUserMedia para pedir mejor calidad de cámara
     const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);

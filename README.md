@@ -1,4 +1,4 @@
-# LensMatch — Sistema de Recomendación de Lentes
+# OptiMatch — Sistema de Recomendación de Lentes
 
 Sistema web de recomendación de lentes basado en reconocimiento facial.
 Frontend en HTML/CSS/JS puro + Backend en FastAPI (Python) + SQLite + OpenCV/MediaPipe.
@@ -6,11 +6,11 @@ Frontend en HTML/CSS/JS puro + Backend en FastAPI (Python) + SQLite + OpenCV/Med
 ## Estructura del Proyecto
 
 ```
-lensmatch/
+OptiMatch/
 ├── main.py                    # Backend FastAPI (rutas + API)
 ├── database.py                # Módulo SQLite (CRUD lentes + formas de rostro)
 ├── face_analyzer.py           # Análisis facial con OpenCV + MediaPipe (adaptado de v2)
-├── lensmatch.db               # Base de datos SQLite (se genera automáticamente)
+├── OptiMatch.db               # Base de datos SQLite (se genera automáticamente)
 ├── requirements.txt           # Dependencias Python
 ├── static/
 │   ├── css/

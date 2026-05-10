@@ -1,5 +1,5 @@
 """
-database.py — Módulo de base de datos SQLite para LensMatch
+database.py — Módulo de base de datos SQLite para OptiMatch
 Gestiona la tabla de lentes y las recomendaciones por forma de rostro.
 """
 
@@ -7,7 +7,7 @@ import sqlite3
 import json
 import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "lensmatch.db")
+DB_PATH = os.path.join(os.path.dirname(__file__), "OptiMatch.db")
 
 
 def get_connection():
