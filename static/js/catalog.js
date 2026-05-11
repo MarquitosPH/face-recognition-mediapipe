@@ -55,14 +55,40 @@ function toggleFav(btn) {
 }
 
 // ============================================
-// MOSTRAR COMPATIBILIDAD SOLO SI HAY ANÁLISIS PREVIO
-// (Nielsen #1 visibilidad real, #5 prevenir falsa información)
+// COMPATIBILIDAD PERSONALIZADA
+// Solo se muestra si el usuario completó el análisis facial.
+// El % se calcula dinámicamente según si su forma de rostro
+// está en la lista compatible_faces del lente.
 // ============================================
-const savedFaceShape = localStorage.getItem('lm_face_shape');
-if (savedFaceShape) {
+(function applyCompatibility() {
+    const faceShape   = sessionStorage.getItem('lm_face_shape');
+    const confidence  = sessionStorage.getItem('lm_confidence');
+
+    // Sin análisis previo → no mostrar nada
+    if (!faceShape || !confidence) return;
+
+    const userShape = faceShape.trim();
+
     document.querySelectorAll('.product-compat').forEach(el => {
+        let compatFaces = [];
+        try { compatFaces = JSON.parse(el.dataset.faces || '[]'); } catch (_) {}
+
+        const isMatch  = compatFaces.some(f => f.trim().toLowerCase() === userShape.toLowerCase());
+        const baseScore = parseInt(el.dataset.compat, 10) || 0;
+
+        // Calcular score real: si coincide → valor del DB, si no → penalizar
+        const score = isMatch ? baseScore : Math.max(10, Math.round(baseScore * 0.35));
+
+        // Clase del indicador de color
+        const dot      = el.querySelector('.compat-dot');
+        const textSpan = el.querySelector('.compat-text');
+
+        dot.className = 'compat-dot' +
+            (score >= 85 ? '' : score >= 60 ? ' medium' : ' low');
+
+        textSpan.textContent = `${score}% compatible`;
         el.style.display = 'flex';
     });
-}
+})();
 
 if (window.lucide) lucide.createIcons();

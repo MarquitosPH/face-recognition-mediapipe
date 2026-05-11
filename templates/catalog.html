@@ -2,7 +2,7 @@
 {% block title %}Catálogo | OptiMatch{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="/static/css/catalog.css">
+<link rel="stylesheet" href="/static/css/catalog.css?v=2">
 <!-- ============================================
      HERO EDITORIAL CLARO
      ============================================ -->
@@ -95,9 +95,12 @@
             <div class="product-info">
                 <h3 class="product-name">{{ g.name }}</h3>
                 <div class="product-brand">{{ g.brand }} · {{ g.style }}</div>
-                <div class="product-compat" data-compat="{{ g.compatibility }}" style="display:none;">
-                    <span class="compat-dot {% if g.compatibility < 60 %}low{% elif g.compatibility < 85 %}medium{% endif %}"></span>
-                    <span>{{ g.compatibility }}% compatible</span>
+                <div class="product-compat"
+                     data-compat="{{ g.compatibility }}"
+                     data-faces="{{ g.compatible_faces | tojson }}"
+                     style="display:none;">
+                    <span class="compat-dot"></span>
+                    <span class="compat-text">{{ g.compatibility }}% compatible</span>
                 </div>
             </div>
         </a>
@@ -111,5 +114,5 @@
     </div>
 </div>
 
-<script src="/static/js/catalog.js"></script>
+<script src="/static/js/catalog.js?v=2"></script>
 {% endblock %}

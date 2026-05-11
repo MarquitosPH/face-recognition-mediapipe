@@ -143,8 +143,8 @@ function showResult(result) {
     requestAnimationFrame(() => card.classList.add('visible'));
     document.getElementById('btnResults').href = `/resultados?face=${encodeURIComponent(result.face_shape)}`;
     try {
-        localStorage.setItem('lm_face_shape', result.face_shape);
-        localStorage.setItem('lm_confidence', result.confidence);
+        sessionStorage.setItem('lm_face_shape', result.face_shape);
+        sessionStorage.setItem('lm_confidence', result.confidence);
     } catch (e) {}
     setState('result');
     setTimeout(() => {

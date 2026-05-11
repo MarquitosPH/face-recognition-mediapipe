@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const shape = localStorage.getItem('lm_face_shape');
-    const conf = localStorage.getItem('lm_confidence');
+    const shape = sessionStorage.getItem('lm_face_shape');
+    const conf = sessionStorage.getItem('lm_confidence');
     if (shape) {
         document.getElementById('noAnalysis').style.display = 'none';
         document.getElementById('analysisData').style.display = 'block';

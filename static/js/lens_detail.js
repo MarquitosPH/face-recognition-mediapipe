@@ -74,7 +74,7 @@ function toggleFav(btn) {
 // MATCH CONTEXTUAL CON ROSTRO DETECTADO
 // (Nielsen #10: ayuda contextual - solo si hay análisis previo)
 // ============================================
-const savedShape = localStorage.getItem('lm_face_shape');
+const savedShape = sessionStorage.getItem('lm_face_shape');
 const compatibility = parseInt(document.getElementById('glassCompatibility')?.dataset?.value || 0);
 
 if (savedShape) {

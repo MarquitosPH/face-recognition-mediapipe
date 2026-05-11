@@ -71,7 +71,7 @@ function toggleMobileFilters() {
     document.getElementById('sidebarFilters').classList.toggle('mobile-open');
 }
 
-const savedShape = localStorage.getItem('lm_face_shape');
+const savedShape = sessionStorage.getItem('lm_face_shape');
 if (savedShape) {
     document.getElementById('faceBanner').style.display = 'block';
     document.getElementById('faceShapeLabel').textContent = savedShape;
