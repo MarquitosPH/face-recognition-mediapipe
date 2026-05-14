@@ -83,12 +83,12 @@ async def virtual_tryon(request: Request, glass_id: str):
     GLASS_CONFIGS = {
         "LentesPrueba1" : {"scale": "0.064 0.064 0.064", "position": "0 -0.34 -0.33", "rotation": "0 0 0"},
         "LentesAviador" : {"scale": "700 700 700",        "position": "0 0 0",          "rotation": "0 0 0"},
-        "Browline"      : {"scale": "0.5 0.5 0.5", "position": "0 0.07 -0.44", "rotation": "0 0 0"},
-        "CatEye"        : {"scale": "3.66 3.66 3.66", "position": "0 -0.09 0.07", "rotation": "0 0 0"},
-        "GruesoDecorado": {"scale": "1.85 1.85 1.85", "position": "0 0.4 -0.31", "rotation": "0 180 0"},
-        "redondos"      : {"scale": "0.06 0.06 0.06", "position": "-0.04 -0.19 -0.25", "rotation": "0 90 0"},
-        "square"        : {"scale": "1 1 1", "position": "-0.75 -1 0.75", "rotation": "-10 70 0"},
-        "square2"       : {"scale": "0.7 0.7 0.7", "position": "-0.03 0.10 -0.33", "rotation": "0 0 0"},
+        "Browline"      : {"scale": "0.5 0.5 0.5", "position": "0 -0.03 -0.44", "rotation": "0 0 0"}, #classic oval
+        "CatEye"        : {"scale": "3.66 3.66 3.66", "position": "0 -0.16 0.07", "rotation": "0 0 0"},
+        "GruesoDecorado": {"scale": "1.85 1.85 1.85", "position": "-0.03 0.06 -0.29", "rotation": "0 180 0"}, # elegance frame
+        "redondos"      : {"scale": "0.06 0.06 0.06", "position": "-0.02 -0.19 -0.25", "rotation": "0 96 0"}, #redondos
+        "square"        : {"scale": "1.075 1.075 1.075", "position": "0.5 -1.1 -1.3", "rotation": "-9 -115 0"}, #titanium air
+        "square2"       : {"scale": "0.742 0.742 0.742", "position": "-0.03 0.06 -0.35", "rotation": "0 0 0"}, # moder square
     }
     default_config = {"scale": "0.064 0.064 0.064", "position": "0 -0.34 -0.33", "rotation": "0 0 0"}
     glass_config   = GLASS_CONFIGS.get(glass.get("model_3d", ""), default_config)
