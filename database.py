@@ -40,6 +40,12 @@ def init_db():
             model_3d    TEXT
         )
     """)
+    for col in ["cfg_scale REAL", "cfg_x REAL", "cfg_y REAL", "cfg_z REAL",
+            "cfg_rx REAL", "cfg_ry REAL", "cfg_rz REAL"]:
+        try:
+            c.execute(f"ALTER TABLE glasses ADD COLUMN {col}")
+        except:
+            pass
 
     c.execute("""
         CREATE TABLE IF NOT EXISTS face_shapes (
@@ -306,6 +312,28 @@ def get_face_shape_by_name(name: str):
     row = conn.execute("SELECT * FROM face_shapes WHERE name = ?", (name,)).fetchone()
     conn.close()
     return _row_to_dict(row) if row else None
+
+def save_glass_config(glass_id: str, scale: float, pos_x: float, pos_y: float, pos_z: float, rot_x: float = 0, rot_y: float = 0, rot_z: float = 0):
+    conn = get_connection()
+    conn.execute("""
+        UPDATE glasses SET
+            cfg_scale = ?, cfg_x = ?, cfg_y = ?, cfg_z = ?,
+            cfg_rx = ?, cfg_ry = ?, cfg_rz = ?
+        WHERE id = ?
+    """, (scale, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, glass_id))
+    conn.commit()
+    conn.close()
+
+def get_glass_config(glass_id: str):
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT cfg_scale, cfg_x, cfg_y, cfg_z, cfg_rx, cfg_ry, cfg_rz FROM glasses WHERE id = ?",
+        (glass_id,)
+    ).fetchone()
+    conn.close()
+    if row and row["cfg_scale"] is not None:
+        return dict(row)
+    return None
 
 
 init_db()

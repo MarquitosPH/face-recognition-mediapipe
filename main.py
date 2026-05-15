@@ -7,11 +7,12 @@ from fastapi import FastAPI, Request, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import Request  
 import os
 
 from database import (
     get_all_glasses, get_glass_by_id, get_glasses_by_face_shape,
-    get_all_face_shapes, get_face_shape_by_name
+    get_all_face_shapes, get_face_shape_by_name, save_glass_config, get_glass_config
 )
 from face_analyzer import analyze_face_image
 
@@ -92,6 +93,7 @@ async def virtual_tryon(request: Request, glass_id: str):
     }
     default_config = {"scale": "0.064 0.064 0.064", "position": "0 -0.34 -0.33", "rotation": "0 0 0"}
     glass_config   = GLASS_CONFIGS.get(glass.get("model_3d", ""), default_config)
+    saved_config = get_glass_config(glass_id)
 
     return templates.TemplateResponse("virtual_tryon.html", {
         "request"       : request,
@@ -99,6 +101,7 @@ async def virtual_tryon(request: Request, glass_id: str):
         "similar_glasses": similar,
         "all_glasses"   : all_glasses,
         "glass_config"  : glass_config,
+        "saved_config": saved_config,  
     })
 
 
@@ -152,6 +155,24 @@ async def api_get_glasses():
     """Retorna todos los lentes desde SQLite."""
     return get_all_glasses()
 
+@app.post("/api/glasses/{glass_id}/config")
+async def save_config(glass_id: str, request: Request):
+    data = await request.json()
+    save_glass_config(
+        glass_id,
+        scale=data.get("scale", 0.5),
+        pos_x=data.get("x", 0),
+        pos_y=data.get("y", 0),
+        pos_z=data.get("z", 0),
+    )
+    return {"ok": True}
+
+@app.get("/api/glasses/{glass_id}/config")
+async def get_config(glass_id: str):
+    config = get_glass_config(glass_id)
+    if config:
+        return config
+    return {}
 
 @app.get("/api/glasses/{glass_id}")
 async def api_get_glass(glass_id: str):

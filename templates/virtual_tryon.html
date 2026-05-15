@@ -183,22 +183,34 @@
     </div>
 
     <!-- Sliders de ajuste -->
-    <div class="sliders-panel">
+<!-- Sliders de ajuste -->
+<div class="sliders-panel">
     <div class="slider-group">
         <label>Escala: <span id="valScale">1</span></label>
-        <input type="range" id="sliderScale" min="0.001" max="0.1" step="0.001" value="0.01" oninput="adjustGlasses()">
+        <input type="range" id="sliderScale" min="0.001" max="800" step="0.001" value="0.5" oninput="adjustGlasses()">
     </div>
     <div class="slider-group">
         <label>Y (arriba/abajo): <span id="valY">0</span></label>
-        <input type="range" id="sliderY" min="-0.5" max="0.5" step="0.01" value="0" oninput="adjustGlasses()">
+        <input type="range" id="sliderY" min="-3" max="3" step="0.01" value="0" oninput="adjustGlasses()">
     </div>
     <div class="slider-group">
         <label>Z (profundidad): <span id="valZ">0</span></label>
-        <input type="range" id="sliderZ" min="-0.5" max="0.5" step="0.01" value="0" oninput="adjustGlasses()">
+        <input type="range" id="sliderZ" min="-3" max="3" step="0.01" value="0" oninput="adjustGlasses()">
     </div>
     <div class="slider-group">
         <label>X (izq/der): <span id="valX">0</span></label>
-        <input type="range" id="sliderX" min="-0.3" max="0.3" step="0.01" value="0" oninput="adjustGlasses()">
+        <input type="range" id="sliderX" min="-3" max="3" step="0.01" value="0" oninput="adjustGlasses()">
+    </div>
+    <div class="slider-group" style="display:flex;flex-direction:column;justify-content:flex-end;">
+        <button id="btnGuardar" onclick="guardarConfig()" style="
+            padding:8px 16px; background:#2563eb; color:white; border:none;
+            border-radius:8px; cursor:pointer; font-size:0.8rem; font-weight:600;
+            white-space:nowrap;">
+            💾 Guardar
+        </button>
+        <span id="saveMsg" style="display:none;color:#22c55e;font-size:0.7rem;text-align:center;margin-top:4px;">
+            ✓ Guardado
+        </span>
     </div>
 </div>
     <script>
@@ -207,103 +219,174 @@
     // ═══════════════════════════════════════════════════════
 
     let currentModelName = '{{ glass.model_3d }}';
+    let currentGlassId   = '{{ glass.id }}';
+
+    // ── CONFIGS ORIGINALES (referencia, NO borrar) ──────────
+    // const GLASS_CONFIGS_ORIGINAL = {
+    //     LentesPrueba1:  { scale:"0.064 0.064 0.064",      position:"0 -0.34 -0.33",    rotation:"0 0 0"     },
+    //     LentesAviador:  { scale:"700 700 700",             position:"0 0 0",             rotation:"0 0 0"     },
+    //     Browline:       { scale:"0.5 0.5 0.5",             position:"0 0.07 -0.44",      rotation:"0 0 0"     },  // classic oval
+    //     CatEye:         { scale:"3.66 3.66 3.66",          position:"0 -0.09 0.07",      rotation:"0 0 0"     },
+    //     GruesoDecorado: { scale:"1.85 1.85 1.85",          position:"0 0.4 -0.31",       rotation:"0 180 0"   },  // elegance frame
+    //     redondos:       { scale:"0.05 0.05 0.05",          position:"-0.04 -0.19 -0.25", rotation:"0 90 0"    },
+    //     square:         { scale:"1 1 1",                   position:"-0.75 -1 0.75",     rotation:"-10 70 0"  },  // titanium air
+    //     square2:        { scale:"0.7 0.7 0.7",             position:"-0.03 0.10 -0.33",  rotation:"0 0 0"     },  // modern square
+    // };
+    // ────────────────────────────────────────────────────────
 
     const GLASS_CONFIGS = {
-    LentesPrueba1: {
-    scale: "0.064 0.064 0.064",
-    position: "0 -0.34 -0.33",
-    rotation: "0 0 0",
-    },
-    LentesAviador: {
-    scale: "700 700 700",
-    position: "0 0 0",
-    rotation: "0 0 0",
-    },
-    Browline: {                             //Ya está classic oval
-    scale: "0.5 0.5 0.5",
-    position: "0 -0.03 -0.44",
-    rotation: "0 0 0",
-    },
-    CatEye: {                                //Ya está cat eye
-    scale: "3.66 3.66 3.66",
-    position: "0 -0.16 0.07",
-    rotation: "0 0 0",
-    },
-    GruesoDecorado: {      //elegance grame                  //ya está    
-    scale: "1.85 1.85 1.85",
-    position: "-0.03 0.06 -0.29",
-    rotation: "0 180 0",
-    },
-    redondos: { // ya está
-    scale: "0.06 0.06 0.06",
-    position: "-0.02 -0.19 -0.25",
-    rotation: "0 96 0",
-    },
-    square: {                               //ya está   titanium air 
-    scale: "1.075 1.075 1.075",
-    position: "0.5 -1.1 -1.3",
-    rotation: "-9 -115 0",
-    },
-    square2: { // modern square ya está
-    scale: "0.742 0.742 0.742",
-    position: "-0.03 0.6 -0.35",
-    rotation: "0 0 0",
-    },
+        LentesPrueba1:  { scale:"0.064 0.064 0.064",      position:"0 -0.34 -0.33",    rotation:"0 0 0"    },
+        LentesAviador:  { scale:"700 700 700",             position:"0 0 0",             rotation:"0 0 0"    },
+        Browline:       { scale:"0.5 0.5 0.5",             position:"0 -0.03 -0.44",     rotation:"0 0 0"    },  // classic oval
+        CatEye:         { scale:"3.66 3.66 3.66",          position:"0 -0.16 0.07",      rotation:"0 0 0"    },
+        GruesoDecorado: { scale:"1.85 1.85 1.85",          position:"-0.03 0.06 -0.29",  rotation:"0 180 0"  },  // elegance frame
+        redondos:       { scale:"0.06 0.06 0.06",          position:"-0.02 -0.19 -0.25", rotation:"0 96 0"   },
+        square:         { scale:"1.075 1.075 1.075",       position:"0.5 -1.1 -1.3",     rotation:"-9 -115 0"},  // titanium air
+        square2:        { scale:"0.742 0.742 0.742",       position:"-0.03 0.6 -0.35",   rotation:"0 0 0"    },  // modern square
     };
     const DEFAULT_CONFIG = { scale:"0.01 0.01 0.01", position:"0 0 0.05", rotation:"0 0 0" };
     function getConfig(n) { return GLASS_CONFIGS[n] || DEFAULT_CONFIG; }
 
+    // ── CACHÉ DE CONFIGS GUARDADAS ───────────────────────────
+    // Se pre-carga al inicio con todos los lentes para evitar
+    // fetches lentos al cambiar, y se actualiza al guardar.
+    // Formato: { "glass_id": { scale, x, y, z } | null }
+    const configCache = {};
+
+    // Inyectar la config del lente inicial (ya la tiene el servidor)
+    {% if saved_config and saved_config.cfg_scale is not none %}
+    configCache['{{ glass.id }}'] = {
+        scale: {{ saved_config.cfg_scale }},
+        x:     {{ saved_config.cfg_x }},
+        y:     {{ saved_config.cfg_y }},
+        z:     {{ saved_config.cfg_z }}
+    };
+    {% else %}
+    configCache['{{ glass.id }}'] = null;
+    {% endif %}
+
+    // Carga config del servidor para un id (usa caché si ya se tiene)
+    async function fetchConfig(id) {
+        if (id in configCache) return configCache[id];
+        try {
+            const res  = await fetch(`/api/glasses/${id}/config`);
+            const data = await res.json();
+            configCache[id] = (data && data.cfg_scale !== null && data.cfg_scale !== undefined)
+                ? { scale: data.cfg_scale, x: data.cfg_x, y: data.cfg_y, z: data.cfg_z }
+                : null;
+        } catch {
+            configCache[id] = null;
+        }
+        return configCache[id];
+    }
+
+    // Pre-carga configs de todos los lentes en background al cargar la página
+    function preloadAllConfigs() {
+        document.querySelectorAll('.glass-item').forEach(el => {
+            const id = el.dataset.glassId;
+            if (id && !(id in configCache)) fetchConfig(id);
+        });
+    }
+    // ────────────────────────────────────────────────────────
+
+    // Aplica valores a los sliders y actualiza el lente en pantalla
+    function applyToSliders(scale, x, y, z) {
+        document.getElementById('sliderScale').value = scale;
+        document.getElementById('sliderX').value     = x;
+        document.getElementById('sliderY').value     = y;
+        document.getElementById('sliderZ').value     = z;
+        adjustGlasses();
+    }
+
     function adjustGlasses() {
         const e = document.getElementById('glassesEntity');
         if (!e) return;
-        const s=parseFloat(document.getElementById('sliderScale').value);
-        const y=parseFloat(document.getElementById('sliderY').value);
-        const z=parseFloat(document.getElementById('sliderZ').value);
-        const x=parseFloat(document.getElementById('sliderX').value);
-        e.setAttribute('scale',`${s} ${s} ${s}`);
-        e.setAttribute('position',`${x} ${y} ${z}`);
-        document.getElementById('valScale').textContent=s.toFixed(3);
-        document.getElementById('valY').textContent=y.toFixed(2);
-        document.getElementById('valZ').textContent=z.toFixed(2);
-        document.getElementById('valX').textContent=x.toFixed(2);
+        const s = parseFloat(document.getElementById('sliderScale').value);
+        const y = parseFloat(document.getElementById('sliderY').value);
+        const z = parseFloat(document.getElementById('sliderZ').value);
+        const x = parseFloat(document.getElementById('sliderX').value);
+        e.setAttribute('scale',    `${s} ${s} ${s}`);
+        e.setAttribute('position', `${x} ${y} ${z}`);
+        document.getElementById('valScale').textContent = s.toFixed(3);
+        document.getElementById('valY').textContent     = y.toFixed(2);
+        document.getElementById('valZ').textContent     = z.toFixed(2);
+        document.getElementById('valX').textContent     = x.toFixed(2);
     }
 
-    function selectGlass(el) {
-        document.querySelectorAll('.glass-item').forEach(o=>o.classList.remove('active'));
-        el.classList.add('active');
-        const name=el.dataset.glassName, model=el.dataset.glassModel, id=el.dataset.glassId;
-        document.getElementById('currentGlassName').textContent=name;
-        document.getElementById('currentName').textContent=name;
+    // Guarda la config del lente activo en DB y actualiza el caché
+    function guardarConfig() {
+        const scale = parseFloat(document.getElementById('sliderScale').value);
+        const y     = parseFloat(document.getElementById('sliderY').value);
+        const z     = parseFloat(document.getElementById('sliderZ').value);
+        const x     = parseFloat(document.getElementById('sliderX').value);
 
-        if (model) {
-            currentModelName=model;
-            const e=document.getElementById('glassesEntity'), cfg=getConfig(model);
-            e.setAttribute('gltf-model',`/static/models/${model}.glb`);
-            e.setAttribute('scale',cfg.scale);
-            e.setAttribute('position',cfg.position);
-            e.setAttribute('rotation',cfg.rotation);
-            const pos=cfg.position.split(' ').map(Number), scl=parseFloat(cfg.scale.split(' ')[0]);
-            document.getElementById('sliderScale').max = scl * 3;
-            document.getElementById('sliderScale').min = scl * 0.1;
-            document.getElementById('sliderScale').step = scl * 0.01;
-            document.getElementById('sliderScale').value=scl;
-            document.getElementById('sliderX').value=pos[0];
-            document.getElementById('sliderY').value=pos[1];
-            document.getElementById('sliderZ').value=pos[2];
-            document.getElementById('valScale').textContent=scl.toFixed(3);
-            document.getElementById('valX').textContent=pos[0].toFixed(2);
-            document.getElementById('valY').textContent=pos[1].toFixed(2);
-            document.getElementById('valZ').textContent=pos[2].toFixed(2);
+        // Actualizar caché local inmediatamente
+        configCache[currentGlassId] = { scale, x, y, z };
+
+        fetch(`/api/glasses/${currentGlassId}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scale, x, y, z })
+        })
+        .then(r => r.json())
+        .then(() => {
+            const msg = document.getElementById('saveMsg');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 2000);
+        });
+    }
+
+    // Cambia de lente. Usa caché para config, y re-aplica tras model-loaded
+    // porque A-Frame puede pisar los atributos al terminar de cargar el .glb
+    async function selectGlass(el) {
+        document.querySelectorAll('.glass-item').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+        const name  = el.dataset.glassName;
+        const model = el.dataset.glassModel;
+        const id    = el.dataset.glassId;
+
+        document.getElementById('currentGlassName').textContent = name;
+        document.getElementById('currentName').textContent      = name;
+
+        if (!model) return;
+        currentModelName = model;
+        currentGlassId   = id;
+
+        const e   = document.getElementById('glassesEntity');
+        const cfg = getConfig(model);
+        e.setAttribute('rotation', cfg.rotation);
+
+        // Resolver config: caché → DB → hardcodeada
+        const saved = await fetchConfig(id);
+        let tScale, tX, tY, tZ;
+        if (saved) {
+            tScale = saved.scale; tX = saved.x; tY = saved.y; tZ = saved.z;
+        } else {
+            const pos = cfg.position.split(' ').map(Number);
+            tScale = parseFloat(cfg.scale.split(' ')[0]);
+            tX = pos[0]; tY = pos[1]; tZ = pos[2];
         }
-        history.replaceState(null,'',`/prueba-virtual/${id}`);
+
+        // Cambiar modelo y aplicar config al instante en los sliders
+        e.setAttribute('gltf-model', `/static/models/${model}.glb`);
+        applyToSliders(tScale, tX, tY, tZ);
+
+        // Re-aplicar DESPUÉS de que A-Frame termine de cargar el .glb
+        // (A-Frame puede resetear position/scale al swapear el modelo)
+        e.addEventListener('model-loaded', function reapply() {
+            e.removeEventListener('model-loaded', reapply);
+            applyToSliders(tScale, tX, tY, tZ);
+        });
+
+        history.replaceState(null, '', `/prueba-virtual/${id}`);
     }
 
     function captureSnapshot() {
-        const s=document.getElementById('arScene');
-        if(!s||!s.canvas){alert('Espera a que cargue');return;}
-        const a=document.createElement('a');
-        a.download=`OptiMatch-${Date.now()}.png`;
-        a.href=s.canvas.toDataURL('image/png');
+        const s = document.getElementById('arScene');
+        if (!s || !s.canvas) { alert('Espera a que cargue'); return; }
+        const a = document.createElement('a');
+        a.download = `OptiMatch-${Date.now()}.png`;
+        a.href     = s.canvas.toDataURL('image/png');
         a.click();
     }
 
@@ -311,24 +394,54 @@
         document.getElementById('sidebarPanel').classList.toggle('open');
     }
 
-    console.log('[OptiMatch] MindAR Full-Screen — modelo:', currentModelName);
-
-    if (window.lucide) lucide.createIcons();
-
     // Sobreescribir getUserMedia para pedir mejor calidad de cámara
     const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
     navigator.mediaDevices.getUserMedia = (constraints) => {
         if (constraints.video) {
             constraints.video = {
                 ...constraints.video,
-                width: { ideal: 1920 },
-                height: { ideal: 1080 },
-                frameRate: { ideal: 30 },
-                facingMode: 'user'
+                width: { ideal: 1920 }, height: { ideal: 1080 },
+                frameRate: { ideal: 30 }, facingMode: 'user'
             };
         }
         return originalGetUserMedia(constraints);
     };
+
+    // Al cargar: inicializar iconos, aplicar config del lente inicial,
+    // y pre-cargar configs del resto de lentes en background
+    window.addEventListener('load', function() {
+        if (window.lucide) lucide.createIcons();
+
+        // Aplicar config inicial (ya está en caché desde el servidor)
+        const initSaved = configCache['{{ glass.id }}'];
+        if (initSaved) {
+            applyToSliders(initSaved.scale, initSaved.x, initSaved.y, initSaved.z);
+        } else {
+            const initCfg = getConfig('{{ glass.model_3d }}');
+            const initPos = initCfg.position.split(' ').map(Number);
+            applyToSliders(parseFloat(initCfg.scale.split(' ')[0]), initPos[0], initPos[1], initPos[2]);
+        }
+
+        // Re-aplicar cuando el modelo inicial termine de cargar
+        const initEntity = document.getElementById('glassesEntity');
+        if (initEntity) {
+            initEntity.addEventListener('model-loaded', function reapplyInit() {
+                initEntity.removeEventListener('model-loaded', reapplyInit);
+                const s = configCache['{{ glass.id }}'];
+                if (s) {
+                    applyToSliders(s.scale, s.x, s.y, s.z);
+                } else {
+                    const c = getConfig('{{ glass.model_3d }}');
+                    const p = c.position.split(' ').map(Number);
+                    applyToSliders(parseFloat(c.scale.split(' ')[0]), p[0], p[1], p[2]);
+                }
+            });
+        }
+
+        // Pre-cargar configs del resto en background
+        preloadAllConfigs();
+        console.log('[OptiMatch] cargado — modelo:', currentModelName, '| id:', currentGlassId);
+    });
     </script>
 </body>
 </html>
