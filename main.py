@@ -86,7 +86,7 @@ async def virtual_tryon(request: Request, glass_id: str):
         "LentesAviador" : {"scale": "700 700 700",        "position": "0 0 0",          "rotation": "0 0 0"},
         "Browline"      : {"scale": "0.5 0.5 0.5", "position": "0 -0.03 -0.44", "rotation": "0 0 0"}, #classic oval
         "CatEye"        : {"scale": "3.66 3.66 3.66", "position": "0 -0.16 0.07", "rotation": "0 0 0"},
-        "GruesoDecorado": {"scale": "1.85 1.85 1.85", "position": "-0.03 0.06 -0.29", "rotation": "0 180 0"}, # elegance frame
+        "GruesoDecorado": {"scale": ".689 .689 .689", "position": "-0.01 0.04 -0.14", "rotation": "0 0 0"}, # elegance frame
         "redondos"      : {"scale": "0.06 0.06 0.06", "position": "-0.02 -0.19 -0.25", "rotation": "0 96 0"}, #redondos
         "square"        : {"scale": "1.075 1.075 1.075", "position": "0.5 -1.1 -1.4", "rotation": "-9 -115 0"}, #titanium air
         "square2"       : {"scale": "0.72 0.72 0.72", "position": "-0.01 -0.01 -0.04", "rotation": "0 0 0"}, # moder square

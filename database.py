@@ -86,9 +86,9 @@ def _seed_glasses(cursor):
     IMG_AVIADOR_4 = "/static/images/LentesAviador04.jpg"
     IMG_BROWLINE1 = "/static/images/browline1.jpg"
     IMG_BROWLINE2 = "/static/images/browline2.jpg"
-    IMG_MODERSQUARE1 = "/static/images/mS.jpg"
-    IMG_MODERSQUARE2 = "/static/images/moderSquare2.jpg"
-    IMG_MODERSQUARE3 = "/static/images/modernSquare3.jpg"
+    IMG_MODERSQUARE1 = "/static/images/mS.png"
+    IMG_MODERSQUARE2 = "/static/images/mS2.png"
+    IMG_MODERSQUARE3 = "/static/images/mS3.png"
     IMG_CATEYE1 = "/static/images/catEye.jpg"
     IMG_CATEYE2 = "/static/images/catEye2.jpg"
     IMG_REDONDOS1 = "/static/images/redondo.jpg"
@@ -98,7 +98,9 @@ def _seed_glasses(cursor):
     IMG_TITANIUM1 = "/static/images/titanium.jpg"
     IMG_TITANIUM2 = "/static/images/titanium2.jpg"
     IMG_TITANIUM3 = "/static/images/titanium3.jpg"
-
+    IMG_DECORADO1 = "/static/images/gD.png"
+    IMG_DECORADO2 = "/static/images/gD2.png"
+    IMG_DECORADO3 = "/static/images/gD3.png"
 
     # Externas — todas fotos de lentes en fondo blanco/neutro (tipo catálogo e-commerce)
     # Seleccionadas para look uniforme (no modelos, no exteriores)
@@ -130,8 +132,8 @@ def _seed_glasses(cursor):
             "style": "Moderno", "material": "Metal", "category": "Profesional", "gender": "Hombre",
             "compatibility": 88, "compatible_faces": ["Ovalado", "Redondo"],
             "description": "Diseño moderno con líneas cuadradas definidas en metal ligero.",
-            "image": IMG_MODERSQUARE1, "image_hover": IMG_MODERSQUARE2,
-            "images": [IMG_MODERSQUARE2, IMG_MODERSQUARE3, IMG_AVIADOR_1],
+            "image": IMG_MODERSQUARE1, "image_hover": IMG_MODERSQUARE3,
+            "images": [IMG_MODERSQUARE1, IMG_MODERSQUARE2, IMG_MODERSQUARE3],
             "tags": ["Moderno", "Metal"], "model_3d": "square2"
         },
         {
@@ -184,8 +186,8 @@ def _seed_glasses(cursor):
             "style": "Elegante", "material": "Metal", "category": "Moda", "gender": "Mujer",
             "compatibility": 86, "compatible_faces": ["Alargado","Redondo", "Corazón"],
             "description": "Marco metálico delicado con detalles refinados.",
-            "image": UX_GLASSES_07, "image_hover": UX_GLASSES_03,
-            "images": [UX_GLASSES_07, UX_GLASSES_03, UX_GLASSES_08],
+            "image": IMG_DECORADO3, "image_hover": IMG_DECORADO2,
+            "images": [IMG_DECORADO1, IMG_DECORADO2, IMG_DECORADO3],
             "tags": ["Elegante", "Metal"], "model_3d": "GruesoDecorado"
         },
         {
