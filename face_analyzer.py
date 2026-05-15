@@ -15,10 +15,9 @@ from typing import Optional, Dict
 
 IMG_SIZE = 224
 
-CLASS_NAMES = ["Corazon", "Cuadrado", "Diamante", "Largo", "Ovalado", "Redondo"]
+CLASS_NAMES = ["Cuadrado", "Diamante", "Largo", "Ovalado", "Redondo"]
 
 DISPLAY_NAMES = {
-    "Corazon"  : "Corazón",
     "Cuadrado" : "Cuadrado",
     "Diamante" : "Diamante",
     "Largo"    : "Largo",
