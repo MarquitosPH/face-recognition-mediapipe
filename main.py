@@ -88,8 +88,8 @@ async def virtual_tryon(request: Request, glass_id: str):
         "CatEye"        : {"scale": "3.66 3.66 3.66", "position": "0 -0.16 0.07", "rotation": "0 0 0"},
         "GruesoDecorado": {"scale": "1.85 1.85 1.85", "position": "-0.03 0.06 -0.29", "rotation": "0 180 0"}, # elegance frame
         "redondos"      : {"scale": "0.06 0.06 0.06", "position": "-0.02 -0.19 -0.25", "rotation": "0 96 0"}, #redondos
-        "square"        : {"scale": "1.075 1.075 1.075", "position": "0.5 -1.1 -1.3", "rotation": "-9 -115 0"}, #titanium air
-        "square2"       : {"scale": "0.742 0.742 0.742", "position": "-0.03 0.06 -0.35", "rotation": "0 0 0"}, # moder square
+        "square"        : {"scale": "1.075 1.075 1.075", "position": "0.5 -1.1 -1.4", "rotation": "-9 -115 0"}, #titanium air
+        "square2"       : {"scale": "0.72 0.72 0.72", "position": "-0.01 -0.01 -0.04", "rotation": "0 0 0"}, # moder square
     }
     default_config = {"scale": "0.064 0.064 0.064", "position": "0 -0.34 -0.33", "rotation": "0 0 0"}
     glass_config   = GLASS_CONFIGS.get(glass.get("model_3d", ""), default_config)

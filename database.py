@@ -84,12 +84,27 @@ def _seed_glasses(cursor):
     IMG_AVIADOR_2 = "/static/images/LentesAviador02.jpg"
     IMG_AVIADOR_3 = "/static/images/LentesAviador03.jpg"
     IMG_AVIADOR_4 = "/static/images/LentesAviador04.jpg"
+    IMG_BROWLINE1 = "/static/images/browline1.jpg"
+    IMG_BROWLINE2 = "/static/images/browline2.jpg"
+    IMG_MODERSQUARE1 = "/static/images/mS.jpg"
+    IMG_MODERSQUARE2 = "/static/images/moderSquare2.jpg"
+    IMG_MODERSQUARE3 = "/static/images/modernSquare3.jpg"
+    IMG_CATEYE1 = "/static/images/catEye.jpg"
+    IMG_CATEYE2 = "/static/images/catEye2.jpg"
+    IMG_REDONDOS1 = "/static/images/redondo.jpg"
+    IMG_REDONDOS2 = "/static/images/redondo2.jpg"
+    IMG_REDONDOS3 = "/static/images/redondo3.jpg"
+    IMG_REDONDOS4 = "/static/images/redondo4.jpg"
+    IMG_TITANIUM1 = "/static/images/titanium.jpg"
+    IMG_TITANIUM2 = "/static/images/titanium2.jpg"
+    IMG_TITANIUM3 = "/static/images/titanium3.jpg"
+
 
     # Externas — todas fotos de lentes en fondo blanco/neutro (tipo catálogo e-commerce)
     # Seleccionadas para look uniforme (no modelos, no exteriores)
     UX_GLASSES_01 = "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&q=80&auto=format"
     UX_GLASSES_02 = "https://images.unsplash.com/photo-1577803645773-f96470509666?w=800&q=80&auto=format"
-    UX_GLASSES_03 = "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&q=80&auto=format"
+    UX_GLASSES_03 = "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&q=80&auto=format" #browline
     UX_GLASSES_04 = "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&q=80&auto=format"
     UX_GLASSES_05 = "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=800&q=80&auto=format"
     UX_GLASSES_06 = "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80&auto=format"
@@ -102,12 +117,12 @@ def _seed_glasses(cursor):
 
     glasses = [
         {
-            "id": "1", "name": "Classic Oval A123PRUEBA", "brand": "VisionPlus",                   #Con este se cubre el triangular       
+            "id": "1", "name": "Browline style", "brand": "VisionPlus",                   #Con este se cubre el triangular       
             "style": "Clásico", "material": "Acetato", "category": "Diario", "gender": "Unisex",
             "compatibility": 94, "compatible_faces": ["Ovalado", "Triangular"],
             "description": "Armazón clásico de acetato con líneas suaves y elegantes.",
-            "image": UX_GLASSES_01, "image_hover": UX_GLASSES_02,
-            "images": [UX_GLASSES_01, UX_GLASSES_02, UX_GLASSES_03],
+            "image": UX_GLASSES_03, "image_hover": IMG_BROWLINE1,
+            "images": [IMG_BROWLINE1, IMG_BROWLINE2, UX_GLASSES_03],
             "tags": ["Clásico", "Acetato"], "model_3d": "Browline"
         },
         {
@@ -115,8 +130,8 @@ def _seed_glasses(cursor):
             "style": "Moderno", "material": "Metal", "category": "Profesional", "gender": "Hombre",
             "compatibility": 88, "compatible_faces": ["Ovalado", "Redondo"],
             "description": "Diseño moderno con líneas cuadradas definidas en metal ligero.",
-            "image": UX_GLASSES_02, "image_hover": UX_GLASSES_05,
-            "images": [UX_GLASSES_02, UX_GLASSES_05, UX_GLASSES_01],
+            "image": IMG_MODERSQUARE1, "image_hover": IMG_MODERSQUARE2,
+            "images": [IMG_MODERSQUARE2, IMG_MODERSQUARE3, IMG_AVIADOR_1],
             "tags": ["Moderno", "Metal"], "model_3d": "square2"
         },
         {
@@ -124,8 +139,8 @@ def _seed_glasses(cursor):
             "style": "Elegante", "material": "Acetato", "category": "Moda", "gender": "Mujer",
             "compatibility": 91, "compatible_faces": ["Diamante", "Cuadrado"],
             "description": "Sofisticado armazón cat-eye en acetato premium.",
-            "image": UX_GLASSES_03, "image_hover": UX_GLASSES_07,
-            "images": [UX_GLASSES_03, UX_GLASSES_07, UX_GLASSES_08],
+            "image": IMG_CATEYE1, "image_hover": IMG_CATEYE2,
+            "images": [IMG_CATEYE2, IMG_CATEYE1],
             "tags": ["Cat-eye", "Acetato"], "model_3d": "CatEye"
         },
         {
@@ -142,8 +157,8 @@ def _seed_glasses(cursor):
             "style": "Retro", "material": "Acetato", "category": "Moda", "gender": "Unisex",
             "compatibility": 78, "compatible_faces": ["Cuadrado", "Triangular"],
             "description": "Inspiración vintage con forma perfectamente redonda.",
-            "image": UX_GLASSES_09, "image_hover": UX_GLASSES_11,
-            "images": [UX_GLASSES_09, UX_GLASSES_11, UX_GLASSES_06],
+            "image": IMG_REDONDOS1, "image_hover": IMG_REDONDOS3,
+            "images": [IMG_REDONDOS1, IMG_REDONDOS2, IMG_REDONDOS3, IMG_REDONDOS4],
             "tags": ["Redondo", "Acetato"], "model_3d": "redondos"
         },
         {
@@ -151,8 +166,8 @@ def _seed_glasses(cursor):
             "style": "Moderno", "material": "Titanio", "category": "Profesional", "gender": "Hombre",
             "compatibility": 90, "compatible_faces": ["Ovalado", "Corazón", "Redondo"],
             "description": "Ultraligero y resistente, diseñado para quienes buscan comodidad sin sacrificar estilo.",
-            "image": UX_GLASSES_04, "image_hover": UX_GLASSES_12,
-            "images": [UX_GLASSES_04, UX_GLASSES_12, UX_GLASSES_02],
+            "image": IMG_TITANIUM1, "image_hover": IMG_TITANIUM2,
+            "images": [IMG_TITANIUM1, IMG_TITANIUM2, IMG_TITANIUM3],
             "tags": ["Moderno", "Titanio"], "model_3d": "square"
         },
         {
